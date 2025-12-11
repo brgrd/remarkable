@@ -1,10 +1,10 @@
-# ReMarkable
+# ReMarkAble
 
-![ReMarkable Banner](https://via.placeholder.com/1200x300/1e1e1e/a100ff?text=ReMarkable+-+Markdown+Formatter)
+![ReMarkAble Banner](https://via.placeholder.com/1200x300/1e1e1e/a100ff?text=ReMarkAble+-+Markdown+Formatter)
 
-**ReMarkable** is a minimalist, client-side markdown formatter and editor designed for software development teams. Create, format, and prettify markdown documents with ease—all in your browser with no backend required.
+**ReMarkAble** is a minimalist, client-side markdown formatter and editor designed for software development teams. Create, format, and prettify markdown documents with ease—all in your browser with no backend required.
 
-> 🎯 **Production Ready** - ReMarkable is feature-complete and ready to deploy to GitHub Pages!
+> 🎯 **Production Ready** - ReMarkAble is feature-complete and ready to deploy to GitHub Pages!
 
 ![Version](https://img.shields.io/badge/version-1.0.0-a100ff)
 ![License](https://img.shields.io/badge/license-MIT-a100ff)
@@ -44,7 +44,7 @@ Visit the hosted version at: **[https://brgrd.github.io/ReMarkAble](https://brgr
 git clone https://github.com/brgrd/ReMarkAble.git
 
 # Navigate to the directory
-cd ReMarkable
+cd ReMarkAble
 
 # Open index.html in your browser
 # Or use a local server (recommended):
@@ -164,7 +164,7 @@ An "Undo" button appears for 5 seconds after prettifying.
 
 ## 🎨 Theme
 
-ReMarkable uses a carefully crafted dark theme optimized for long editing sessions:
+ReMarkAble uses a carefully crafted dark theme optimized for long editing sessions:
 - **Base Colors**: Dark grey (#1e1e1e, #2d2d2d)
 - **Accent**: Purple (#a100ff)
 - **Fonts**: 
@@ -181,7 +181,7 @@ ReMarkable uses a carefully crafted dark theme optimized for long editing sessio
 
 ### Project Structure
 ```
-ReMarkable/
+ReMarkAble/
 ├── index.html              # Main application entry point
 ├── css/
 │   └── styles.css          # All application styles
@@ -219,10 +219,10 @@ Content is stored in browser localStorage:
    git add .
    
    # Commit
-   git commit -m "Initial commit: ReMarkable markdown formatter"
+   git commit -m "Initial commit: ReMarkAble markdown formatter"
    
    # Create repository on GitHub, then:
-   git remote add origin https://github.com/yourusername/ReMarkable.git
+   git remote add origin https://github.com/yourusername/ReMarkAble.git
    git branch -M main
    git push -u origin main
    ```
@@ -233,7 +233,7 @@ Content is stored in browser localStorage:
    - Under "Source", select **Deploy from a branch**
    - Select branch: **main** and folder: **/ (root)**
    - Click **Save**
-   - Your site will be live at `https://yourusername.github.io/ReMarkable` in 1-2 minutes
+   - Your site will be live at `https://yourusername.github.io/ReMarkAble` in 1-2 minutes
 
 3. **Update README links**
    - Replace `yourusername` in the README with your actual GitHub username
@@ -319,4 +319,4 @@ Created with ❤️ for the developer community
 
 ---
 
-**ReMarkable** - Make your markdown remarkable.
+**ReMarkAble** - Make your markdown remarkable.

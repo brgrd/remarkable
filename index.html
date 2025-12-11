@@ -4,16 +4,16 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>ReMarkable - Markdown Formatter & Editor</title>
+	<title>ReMarkAble - Markdown Formatter & Editor</title>
 	<meta name="description"
-		content="ReMarkable is a minimalist markdown formatter for dev teams. Smart section detection, 16 templates, GitHub/Azure DevOps compatible formatting. 100% client-side, fully offline.">
+		content="ReMarkAble is a minimalist markdown formatter for dev teams. Smart section detection, 16 templates, GitHub/Azure DevOps compatible formatting. 100% client-side, fully offline.">
 	<meta name="keywords"
 		content="markdown, editor, formatter, documentation, README, GitHub, Azure DevOps, developer tools">
-	<meta name="author" content="ReMarkable">
+	<meta name="author" content="ReMarkAble">
 
 	<!-- Open Graph / Social Media -->
 	<meta property="og:type" content="website">
-	<meta property="og:title" content="ReMarkable - Make Your Markdown Remarkable">
+	<meta property="og:title" content="ReMarkAble - Make Your Markdown Remarkable">
 	<meta property="og:description"
 		content="Smart markdown editor with section detection, 16 templates, and GitHub-compatible formatting. Perfect for dev teams.">
 	<meta property="og:url" content="https://brgrd.github.io/ReMarkAble">
@@ -34,7 +34,13 @@
 		<!-- Left Sidebar -->
 		<aside id="sidebar" class="sidebar">
 			<div class="sidebar-header">
-				<h1 class="logo">Re<span>Mark</span>able</h1>
+				<h1 class="logo">
+					<div class="logo-main">
+						<span class="logo-hash">#</span>
+						Re<span class="logo-highlight">Mark</span>Able
+					</div>
+					<span class="logo-ext">.md</span>
+				</h1>
 				<button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle sidebar">
 					<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
 						<path d="M3 10h14M3 5h14M3 15h14" stroke="currentColor" stroke-width="2"
@@ -181,8 +187,16 @@
 							<input type="text" id="apiUrlInput" placeholder="https://api.example.com/v1">
 						</div>
 						<div class="form-group">
-							<label for="securityEmailInput">Security Email</label>
-							<input type="email" id="securityEmailInput" placeholder="security@example.com">
+							<label for="contactEmailInput">Contact Email</label>
+							<input type="email" id="contactEmailInput" placeholder="contact@example.com">
+						</div>
+						<div class="form-group">
+							<label for="projectDescInput">Project Description</label>
+							<input type="text" id="projectDescInput" placeholder="A clear and concise description">
+						</div>
+						<div class="form-group">
+							<label for="licenseTypeInput">License Type</label>
+							<input type="text" id="licenseTypeInput" placeholder="MIT">
 						</div>
 					</div>
 				</section>
@@ -209,7 +223,7 @@
 							<option value="license">License</option>
 							<option value="changelog">Changelog</option>
 						</select>
-						<button id="insertSectionBtn" class="insert-section-btn" disabled>
+						<button id="insertTemplateBtn" class="insert-template-btn" disabled>
 							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
 								stroke-width="2">
 								<path d="M12 5v14M5 12h14" />

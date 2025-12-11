@@ -132,7 +132,7 @@ const sections = {
 
 	description: `## Description
 
-A clear and concise description of what this project does and who it's for.
+{{projectDesc}}
 
 **Key Features:**
 - Feature 1
@@ -303,7 +303,7 @@ Please make sure to:
 
 ### Reporting Vulnerabilities
 
-If you discover a security vulnerability, please email {{securityEmail}}. Do not open a public issue.
+If you discover a security vulnerability, please email {{contactEmail}}. Do not open a public issue.
 
 We take all security reports seriously and will respond within 48 hours.
 
@@ -311,7 +311,7 @@ We take all security reports seriously and will respond within 48 hours.
 
 	license: `## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the {{licenseType}} License - see the [LICENSE](LICENSE) file for details.
 
 `,
 
@@ -834,7 +834,7 @@ function init() {
 		location.reload();
 	};
 
-	console.log('ReMarkable loaded. Sidebar state:', editorState.sidebarCollapsed);
+	console.log('ReMarkAble loaded. Sidebar state:', editorState.sidebarCollapsed);
 	console.log('To reset sidebar if stuck, run: resetSidebar()');
 }
 
@@ -870,7 +870,8 @@ function setupEventListeners() {
 	// Template variable inputs - save to localStorage on change
 	const templateVarInputs = [
 		'projectNameInput', 'usernameInput', 'repoInput',
-		'ticketNumberInput', 'prTitleInput', 'apiUrlInput', 'securityEmailInput'
+		'ticketNumberInput', 'prTitleInput', 'apiUrlInput', 'contactEmailInput',
+		'projectDescInput', 'licenseTypeInput'
 	];
 
 	templateVarInputs.forEach(inputId => {
@@ -1303,7 +1304,9 @@ async function processTemplateVariables(template, sectionName) {
 		ticketNumber: document.getElementById('ticketNumberInput')?.value || '00000',
 		prTitle: document.getElementById('prTitleInput')?.value || '[Title]',
 		apiUrl: document.getElementById('apiUrlInput')?.value || 'https://api.example.com/v1',
-		securityEmail: document.getElementById('securityEmailInput')?.value || 'security@example.com'
+		contactEmail: document.getElementById('contactEmailInput')?.value || 'contact@example.com',
+		projectDesc: document.getElementById('projectDescInput')?.value || 'A clear and concise description of what this project does and who it\'s for.',
+		licenseType: document.getElementById('licenseTypeInput')?.value || 'MIT'
 	};
 
 	// Replace placeholders in template
@@ -1762,7 +1765,9 @@ function loadTemplateVariables() {
 			if (vars.ticketNumberInput) document.getElementById('ticketNumberInput').value = vars.ticketNumberInput;
 			if (vars.prTitleInput) document.getElementById('prTitleInput').value = vars.prTitleInput;
 			if (vars.apiUrlInput) document.getElementById('apiUrlInput').value = vars.apiUrlInput;
-			if (vars.securityEmailInput) document.getElementById('securityEmailInput').value = vars.securityEmailInput;
+			if (vars.contactEmailInput) document.getElementById('contactEmailInput').value = vars.contactEmailInput;
+			if (vars.projectDescInput) document.getElementById('projectDescInput').value = vars.projectDescInput;
+			if (vars.licenseTypeInput) document.getElementById('licenseTypeInput').value = vars.licenseTypeInput;
 		} catch (e) {
 			console.error('Error loading template variables:', e);
 		}

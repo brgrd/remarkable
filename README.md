@@ -1,4 +1,4 @@
-# ReMarkable
+# ReMarkAble
 
 **A minimalist markdown formatter and editor for software development teams.**
 
@@ -30,7 +30,7 @@ Visit: **[https://brgrd.github.io/ReMarkAble](https://brgrd.github.io/ReMarkAble
 ### Run Locally
 ```bash
 git clone https://github.com/brgrd/ReMarkAble.git
-cd ReMarkable
+cd ReMarkAble
 python -m http.server 8000
 # Visit http://localhost:8000
 ```
@@ -171,7 +171,7 @@ An "Undo" button appears for 5 seconds after prettifying.
 
 ## Theme
 
-ReMarkable uses a carefully crafted dark theme optimized for long editing sessions:
+ReMarkAble uses a carefully crafted dark theme optimized for long editing sessions:
 - **Base Colors**: Dark grey (#1e1e1e, #2d2d2d)
 - **Accent**: Purple (#a100ff)
 - **Fonts**: 
@@ -211,7 +211,7 @@ Content is stored in browser localStorage:
    git add .
    
    # Commit
-   git commit -m "Initial commit: ReMarkable markdown formatter"
+   git commit -m "Initial commit: ReMarkAble markdown formatter"
    
    # Create repository on GitHub, then:
    git remote add origin https://github.com/brgrd/ReMarkAble.git
@@ -306,4 +306,4 @@ Created for the developer community
 
 ---
 
-**ReMarkable** - Make your markdown remarkable.
+**ReMarkAble** - Make your markdown remarkable.
