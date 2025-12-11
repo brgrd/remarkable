@@ -344,6 +344,41 @@ All notable changes to this project will be documented here.
 #### Added
 - Initial release
 
+`,
+
+	quickPR: `# PR: [Title]
+
+## Overview
+<!-- Brief description of what this PR accomplishes and why -->
+
+
+## Key Changes
+
+### Component/Module Updates
+- 
+
+### Dependency Updates
+- 
+
+### Configuration Changes
+- 
+
+### Database/Schema Changes
+- 
+
+## Testing
+- [ ] Unit tests passing
+- [ ] Integration tests passing  
+- [ ] Cypress/E2E tests updated
+- [ ] Manual testing complete
+- [ ] Accessibility verified
+
+## Deployment Notes
+<!-- Any special deployment instructions, migrations, or rollout considerations -->
+
+
+## Related
+**Ticket:** PROJ-XXX
 `
 };
 
@@ -633,43 +668,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.0]: https://github.com/username/project/releases/tag/v0.1.0
 `,
 
-	quickPR: `## Technical Changes
-
-**Type:** [ Bug Fix | Feature | Refactor | Config | Performance | Documentation ]
-
-**Summary:**
-<!-- One-line description of the change -->
-
-**Modified Components:**
-- 
-
-**Key Changes:**
-- 
-- 
-
-**Dependencies:**
-- None / [ List updated packages/libraries ]
-
-**Database Changes:**
-- None / [ Migrations, schema updates ]
-
-**Configuration:**
-- None / [ Environment variables, config files ]
-
-**Testing:**
-- [ ] Unit tests passing
-- [ ] Integration tests passing
-- [ ] Manual testing complete
-
-**Deployment Notes:**
-<!-- Special instructions or considerations -->
-
-**Rollback:** 
-<!-- How to revert if needed -->
-
-**Ticket:** [PROJ-XXX](https://jira.example.com/browse/PROJ-XXX)
-`,
-
 	pr: `## Summary
 <!-- Brief description of what this PR accomplishes -->
 
@@ -729,7 +727,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Related Items
 <!-- Link to tickets, issues, or documentation -->
-**Jira:** [PROJ-XXX](https://jira.example.com/browse/PROJ-XXX)
+**Ticket:** PROJ-XXX
 **Related PRs:** 
 **Documentation:** 
 
