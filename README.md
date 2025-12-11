@@ -5,23 +5,23 @@
 ![Version](https://img.shields.io/badge/version-1.0.0-a100ff)
 ![License](https://img.shields.io/badge/license-MIT-a100ff)
 
-## ✨ Features
+## Features
 
-- 🎯 **Live Preview** - Real-time markdown rendering
-- 🔍 **Find & Replace** - Search with case-sensitivity and whole-word options
-- 📝 **16 Section Templates** - Pre-built documentation sections
-- 🎨 **Smart Document Analysis** - Detects existing/missing sections
-- 🔤 **16 Formatting Tools** - GitHub/Azure DevOps compatible
-- ✨ **Smart Prettify** - Auto-format markdown with one click
-- ⏮️ **Undo System** - 50-state history for all actions
-- 📊 **Word Count** - Live statistics (words, characters, lines)
-- 📁 **Drag & Drop** - Load files directly into the editor
-- 💾 **Auto-Save** - Content persists in localStorage
-- 🌙 **Dark Theme** - Purple accent (#a100ff)
-- 📱 **Mobile Responsive** - Works on all devices
-- ⚡ **100% Offline** - No server required
+- **Live Preview** - Real-time markdown rendering
+- **Find & Replace** - Search with case-sensitivity and whole-word options
+- **16 Section Templates** - Pre-built documentation sections
+- **Smart Document Analysis** - Detects existing/missing sections
+- **16 Formatting Tools** - GitHub/Azure DevOps compatible
+- **Smart Prettify** - Auto-format markdown with one click
+- **Undo System** - 50-state history for all actions
+- **Word Count** - Live statistics (words, characters, lines)
+- **Drag & Drop** - Load files directly into the editor
+- **Auto-Save** - Content persists in localStorage
+- **Dark Theme** - Purple accent (#a100ff)
+- **Mobile Responsive** - Works on all devices
+- **100% Offline** - No server required
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Use Online
 Visit: **[https://brgrd.github.io/ReMarkAble](https://brgrd.github.io/ReMarkAble)**
@@ -34,7 +34,7 @@ python -m http.server 8000
 # Visit http://localhost:8000
 ```
 
-## ⌨️ Keyboard Shortcuts
+## Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
@@ -46,18 +46,18 @@ python -m http.server 8000
 | `Ctrl + Z` | Undo |
 | `Ctrl + /` | Show shortcuts |
 
-## 📖 Documentation
+## Documentation
 
 For detailed documentation, see [DOCUMENTATION.md](docs/DOCUMENTATION.md)
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **HTML5 + CSS3** - Semantic structure, Grid/Flexbox layout
 - **Vanilla JavaScript** - No framework dependencies
 - **Marked.js** - Markdown parsing
 - **Google Fonts** - Space Grotesk & Fira Code
 
-## 📦 Project Structure
+## Project Structure
 
 ```
 ReMarkAble/
@@ -71,7 +71,7 @@ ReMarkAble/
 └── README.md               # This file
 ```
 
-## 📖 Usage
+## Usage
 
 ### Basic Editing
 1. Start typing markdown in the left editor pane
@@ -103,7 +103,7 @@ When inserting sections with placeholders:
 - Visual feedback with "Copied!" confirmation
 
 **Export:**
-- Click **💾 Export .md** to download your formatted markdown
+- Click **Export .md** to download your formatted markdown
 - Files are automatically named based on the first H1 heading or timestamp
 
 ### Word Count
@@ -140,7 +140,7 @@ Choose from 16 modern documentation sections:
 - Horizontal rules and Collapsible sections
 
 ### Prettifying Markdown
-Click the **✨ Prettify** button to automatically:
+Click the **Prettify** button to automatically:
 - Normalize list indentation and bullets
 - Add proper spacing before/after headers
 - Remove excessive whitespace
@@ -167,7 +167,7 @@ An "Undo" button appears for 5 seconds after prettifying.
 | `Ctrl + Z` | Undo action (50 state history) |
 | `Ctrl + /` | Show keyboard shortcuts |
 
-## 🎨 Theme
+## Theme
 
 ReMarkable uses a carefully crafted dark theme optimized for long editing sessions:
 - **Base Colors**: Dark grey (#1e1e1e, #2d2d2d)
@@ -176,7 +176,7 @@ ReMarkable uses a carefully crafted dark theme optimized for long editing sessio
   - UI: Space Grotesk (Google Fonts)
   - Code: Fira Code (Google Fonts)
 
-## 🛠️ Technical Details
+## Technical Details
 
 ### Stack
 - **HTML5** - Semantic structure
@@ -185,10 +185,10 @@ ReMarkable uses a carefully crafted dark theme optimized for long editing sessio
 - **Marked.js** - Markdown parsing (~37KB via CDN)
 
 ### Browser Compatibility
-- ✅ Chrome/Edge 90+
-- ✅ Firefox 88+
-- ✅ Safari 14+
-- ✅ Mobile browsers (iOS Safari, Chrome Mobile)
+- Chrome/Edge 90+
+- Firefox 88+
+- Safari 14+
+- Mobile browsers (iOS Safari, Chrome Mobile)
 
 ### Storage
 Content is stored in browser localStorage:
@@ -196,7 +196,7 @@ Content is stored in browser localStorage:
 - Persists across sessions
 - Sidebar state is remembered
 
-## 📦 Deployment to GitHub Pages
+## Deployment to GitHub Pages
 
 ### Initial Setup
 
@@ -239,7 +239,7 @@ git push
 # GitHub Pages will automatically rebuild (usually within 1 minute)
 ```
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how you can help:
 
@@ -258,13 +258,13 @@ Contributions are welcome! Here's how you can help:
 - Markdown cheat sheet panel
 - Find & replace functionality
 
-## 🐛 Known Issues
+## Known Issues
 
 - Scroll sync may not be pixel-perfect with very large documents
 - LocalStorage limit (~5MB) may be reached with extremely large documents
 - Some advanced markdown extensions (footnotes, task lists) depend on marked.js support
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
@@ -292,11 +292,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-## 👨‍💻 Author
+## Author
 
-Created with ❤️ for the developer community
+Created for the developer community
 
-## 🌟 Acknowledgements
+## Acknowledgements
 
 - [Marked.js](https://marked.js.org/) - Fast markdown parser
 - [Google Fonts](https://fonts.google.com/) - Space Grotesk & Fira Code fonts

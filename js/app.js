@@ -1901,7 +1901,7 @@ function openFindReplace() {
 	findStatus.className = 'find-replace-status';
 	findMatches = [];
 	currentMatchIndex = -1;
-	
+
 	// Focus find input
 	setTimeout(() => findInput.focus(), 100);
 }
@@ -1994,17 +1994,17 @@ function replaceCurrentMatch() {
 	const content = editor.value;
 
 	// Replace the match
-	const newContent = content.substring(0, match.index) + 
-					   replaceText + 
-					   content.substring(match.index + match.length);
-	
+	const newContent = content.substring(0, match.index) +
+		replaceText +
+		content.substring(match.index + match.length);
+
 	editor.value = newContent;
 	handleEditorInput();
 
 	// Update matches after replacement
 	const lengthDiff = replaceText.length - match.length;
 	findMatches.splice(currentMatchIndex, 1);
-	
+
 	// Adjust subsequent match positions
 	for (let i = currentMatchIndex; i < findMatches.length; i++) {
 		findMatches[i].index += lengthDiff;
@@ -2061,7 +2061,7 @@ function replaceAll() {
 	// Update status
 	findStatus.textContent = `Replaced ${matches.length} occurrence${matches.length > 1 ? 's' : ''}`;
 	findStatus.className = 'find-replace-status success';
-	
+
 	// Clear matches
 	findMatches = [];
 	currentMatchIndex = -1;
