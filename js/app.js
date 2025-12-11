@@ -829,7 +829,7 @@ function init() {
 	// Initial render
 	if (editor.value) {
 		updatePreview();
-		 // Analyze loaded document
+		// Analyze loaded document
 	}
 
 	// Add debug helper to window for troubleshooting
@@ -957,7 +957,7 @@ function handleEditorInput() {
 	updatePreview();
 
 	// Update section button indicators
-	
+
 
 	// Auto-save with debounce
 	clearTimeout(saveTimeout);
@@ -1272,7 +1272,7 @@ function insertSection(sectionName) {
 
 		// Trigger update and refresh section indicators
 		handleEditorInput();
-		
+
 
 		// Save new state to history immediately after insertion
 		saveToHistory();
@@ -1479,7 +1479,7 @@ function processFile(file) {
 		handleEditorInput();
 
 		// Analyze document and update section buttons
-		
+
 
 		// Show helpful feedback
 		const analysis = analyzeDocument();
