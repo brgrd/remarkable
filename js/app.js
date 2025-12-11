@@ -254,7 +254,7 @@ curl -H "Authorization: Bearer YOUR_API_KEY" \\
 \`\`\`bash
 # Clear cache and reinstall dependencies
 rm -rf node_modules package-lock.json
-npm install
+package-manager install
 \`\`\`
 
 **Issue: Port already in use**
@@ -851,28 +851,28 @@ function setupEventListeners() {
 	sidebarToggle.addEventListener('click', toggleSidebar);
 	mobileSidebarToggle.addEventListener('click', toggleSidebar);
 
-	// Section dropdown and insert button
-	const sectionDropdown = document.getElementById('sectionDropdown');
-	const insertSectionBtn = document.getElementById('insertSectionBtn');
+	// Template dropdown and insert button
+	const templateDropdown = document.getElementById('templateDropdown');
+	const insertTemplateBtn = document.getElementById('insertTemplateBtn');
 
-	sectionDropdown.addEventListener('change', () => {
-		insertSectionBtn.disabled = !sectionDropdown.value;
+	templateDropdown.addEventListener('change', () => {
+		insertTemplateBtn.disabled = !templateDropdown.value;
 	});
 
-	insertSectionBtn.addEventListener('click', () => {
-		if (sectionDropdown.value) {
-			insertSection(sectionDropdown.value);
-			sectionDropdown.value = '';
-			insertSectionBtn.disabled = true;
+	insertTemplateBtn.addEventListener('click', () => {
+		if (templateDropdown.value) {
+			insertTemplate(templateDropdown.value);
+			templateDropdown.value = '';
+			insertTemplateBtn.disabled = true;
 		}
 	});
 
 	// Template variable inputs - save to localStorage on change
 	const templateVarInputs = [
-		'projectNameInput', 'usernameInput', 'repoInput', 
+		'projectNameInput', 'usernameInput', 'repoInput',
 		'ticketNumberInput', 'prTitleInput', 'apiUrlInput', 'securityEmailInput'
 	];
-	
+
 	templateVarInputs.forEach(inputId => {
 		const input = document.getElementById(inputId);
 		if (input) {
@@ -1197,53 +1197,53 @@ function analyzeDocument() {
 	return foundSections;
 }
 
-// ===== Section Insertion with Smart Positioning =====
-const sectionOrder = [
+// ===== Template Insertion with Smart Positioning =====
+const templateOrder = [
 	'quickPR', 'badges', 'description', 'quickstart', 'prerequisites', 'installation',
 	'configuration', 'usage', 'testing', 'api', 'troubleshooting',
 	'deployment', 'contributing', 'security', 'license', 'changelog'
 ];
 
-function findInsertionPoint(sectionName) {
+function findInsertionPoint(templateName) {
 	const content = editor.value;
 	const lines = content.split('\n');
-	const sectionIndex = sectionOrder.indexOf(sectionName);
+	const templateIndex = templateOrder.indexOf(templateName);
 
-	if (sectionIndex === -1) {
-		// Section not in order, append at end
+	if (templateIndex === -1) {
+		// Template not in order, append at end
 		return content.length;
 	}
 
-	// Find sections that should come after this one
-	const laterSections = sectionOrder.slice(sectionIndex + 1);
+	// Find templates that should come after this one
+	const laterTemplates = templateOrder.slice(templateIndex + 1);
 
-	// Look for the first header of a later section
+	// Look for the first header of a later template
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i].toLowerCase();
 
-		for (const laterSection of laterSections) {
-			// Simple pattern matching - check if line starts with ## and contains section keyword
-			if (line.match(/^##?\s+/) && line.includes(laterSection.replace(/([A-Z])/g, ' $1').trim().toLowerCase())) {
-				// Found a later section, insert before it
+		for (const laterTemplate of laterTemplates) {
+			// Simple pattern matching - check if line starts with ## and contains template keyword
+			if (line.match(/^##?\s+/) && line.includes(laterTemplate.replace(/([A-Z])/g, ' $1').trim().toLowerCase())) {
+				// Found a later template, insert before it
 				const position = lines.slice(0, i).join('\n').length;
 				return position > 0 ? position + 1 : 0;
 			}
 		}
 	}
 
-	// No later section found, insert at end
+	// No later template found, insert at end
 	return content.length;
 }
 
-function insertSection(sectionName) {
-	const section = sections[sectionName];
-	if (!section) return;
+function insertTemplate(templateName) {
+	const template = sections[templateName];
+	if (!template) return;
 
-	// Check if section already exists
+	// Check if template already exists
 	const analysis = analyzeDocument();
-	if (analysis[sectionName]) {
-		// Section exists - just scroll to it or give feedback
-		showToast('This section already exists in your document', 3000);
+	if (analysis[templateName]) {
+		// Template exists - just scroll to it or give feedback
+		showToast('This template already exists in your document', 3000);
 		return;
 	}
 
@@ -1253,11 +1253,11 @@ function insertSection(sectionName) {
 	saveToHistory();
 
 	// Process template with variables
-	processTemplateVariables(section, sectionName).then(processedSection => {
+	processTemplateVariables(template, templateName).then(processedTemplate => {
 		// Use smart positioning if document has content
 		let insertPos;
 		if (currentContent.trim().length > 0) {
-			insertPos = findInsertionPoint(sectionName);
+			insertPos = findInsertionPoint(templateName);
 
 			// Add spacing if needed
 			let prefix = '';
@@ -1270,21 +1270,21 @@ function insertSection(sectionName) {
 				suffix = '\n\n';
 			}
 
-			const newContent = currentContent.substring(0, insertPos) + prefix + processedSection + suffix + currentContent.substring(insertPos);
+			const newContent = currentContent.substring(0, insertPos) + prefix + processedTemplate + suffix + currentContent.substring(insertPos);
 			editor.value = newContent;
 
-			// Move cursor to start of inserted section
+			// Move cursor to start of inserted template
 			const newCursorPos = insertPos + prefix.length;
 			editor.setSelectionRange(newCursorPos, newCursorPos);
 		} else {
 			// Empty document - just insert
-			editor.value = processedSection;
+			editor.value = processedTemplate;
 			editor.setSelectionRange(0, 0);
 		}
 
 		editor.focus();
 
-		// Trigger update and refresh section indicators
+		// Trigger update and refresh template indicators
 		handleEditorInput();
 
 

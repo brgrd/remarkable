@@ -204,23 +204,23 @@ body {
 	transition: all var(--transition-fast);
 }
 
-.section-dropdown:hover {
+.template-dropdown:hover {
 	border-color: var(--accent-primary);
 	background: var(--bg-hover);
 }
 
-.section-dropdown:focus {
+.template-dropdown:focus {
 	outline: none;
 	border-color: var(--accent-primary);
 	box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
-.section-dropdown option {
+.template-dropdown option {
 	background: var(--bg-secondary);
 	color: var(--text-primary);
 }
 
-.insert-section-btn {
+.insert-template-btn {
 	width: 100%;
 	background: var(--accent-primary);
 	border: none;
@@ -238,23 +238,23 @@ body {
 	gap: 8px;
 }
 
-.insert-section-btn:hover:not(:disabled) {
+.insert-template-btn:hover:not(:disabled) {
 	background: var(--accent-hover);
 	transform: translateY(-1px);
 	box-shadow: 0 2px 8px var(--accent-glow);
 }
 
-.insert-section-btn:active:not(:disabled) {
+.insert-template-btn:active:not(:disabled) {
 	transform: translateY(0);
 }
 
-.insert-section-btn:disabled {
+.insert-template-btn:disabled {
 	opacity: 0.4;
 	cursor: not-allowed;
 }
 
 .formatting-section,
-.sections-section,
+.templates-section,
 .actions-section,
 .template-vars-section {
 	margin-bottom: 24px;
