@@ -123,10 +123,10 @@ function setupModalListeners() {
 // ===== Section Templates =====
 const sections = {
 	badges: `<!-- Badges -->
-![Build Status](https://img.shields.io/github/actions/workflow/status/username/repo/ci.yml?branch=main)
-![Coverage](https://img.shields.io/codecov/c/github/username/repo)
-![Version](https://img.shields.io/github/v/release/username/repo)
-![License](https://img.shields.io/github/license/username/repo)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![License](https://img.shields.io/badge/license-MIT-blue)
 
 `,
 
@@ -151,10 +151,10 @@ git clone https://github.com/username/repo.git
 cd repo
 
 # Install dependencies
-npm install
+install-command
 
 # Run the application
-npm start
+start-command
 \`\`\`
 
 `,
@@ -163,22 +163,16 @@ npm start
 
 Before you begin, ensure you have met the following requirements:
 
-- Node.js >= 18.0.0
-- npm >= 9.0.0
-- Git
+- Requirement 1
+- Requirement 2
+- Requirement 3
 
 `,
 
 	installation: `## Installation
 
 \`\`\`bash
-npm install package-name
-\`\`\`
-
-Or with yarn:
-
-\`\`\`bash
-yarn add package-name
+package-manager install package-name
 \`\`\`
 
 `,
@@ -218,13 +212,13 @@ Run the test suite:
 
 \`\`\`bash
 # Run all tests
-npm test
+test-command
 
 # Run tests in watch mode
-npm run test:watch
+test-command --watch
 
 # Generate coverage report
-npm run test:coverage
+test-command --coverage
 \`\`\`
 
 `,
@@ -276,17 +270,14 @@ lsof -ti:3000 | xargs kill -9
 ### Production Build
 
 \`\`\`bash
-npm run build
+build-command
 \`\`\`
 
-### Deploy to Platform
+### Deploy
 
 \`\`\`bash
-# Deploy to Vercel
-vercel --prod
-
-# Deploy to Netlify
-netlify deploy --prod
+# Deploy to production
+deploy-command
 \`\`\`
 
 `,
@@ -378,7 +369,7 @@ All notable changes to this project will be documented here.
 
 
 ## Related
-**Ticket:** PROJ-XXX
+**Ticket:** 00000
 `
 };
 
@@ -727,7 +718,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Related Items
 <!-- Link to tickets, issues, or documentation -->
-**Ticket:** PROJ-XXX
+**Ticket:** 00000
 **Related PRs:** 
 **Documentation:** 
 
@@ -1152,7 +1143,6 @@ function analyzeDocument() {
 		security: [/^##?\s*(security|vulnerab)/i],
 		license: [/^##?\s*(license)/i, /mit license/, /apache/],
 		changelog: [/^##?\s*(changelog|releases|history)/i],
-		pr: [/^##?\s*(summary|pr notes|pull request)/i, /type of change/i],
 		quickPR: [/^##?\s*(technical changes)/i, /key changes/i]
 	};
 
@@ -1185,7 +1175,7 @@ function analyzeDocument() {
 const sectionOrder = [
 	'quickPR', 'badges', 'description', 'quickstart', 'prerequisites', 'installation',
 	'configuration', 'usage', 'testing', 'api', 'troubleshooting',
-	'deployment', 'contributing', 'security', 'license', 'changelog', 'pr'
+	'deployment', 'contributing', 'security', 'license', 'changelog'
 ];
 
 function findInsertionPoint(sectionName) {
