@@ -153,37 +153,59 @@
 					</div>
 				</section>
 
-<section class="sections-section">
-<h2 class="section-title">Sections</h2>
-<div class="section-controls">
-<select id="sectionDropdown" class="section-dropdown">
-<option value="">Choose a section...</option>
-<option value="quickPR">Quick PR Template</option>
-<option value="badges">Badges</option>
-<option value="description">Description</option>
-<option value="quickstart">Quick Start</option>
-<option value="prerequisites">Prerequisites</option>
-<option value="installation">Installation</option>
-<option value="configuration">Configuration</option>
-<option value="usage">Usage</option>
-<option value="testing">Testing</option>
-<option value="api">API Docs</option>
-<option value="troubleshooting">Troubleshooting</option>
-<option value="deployment">Deployment</option>
-<option value="contributing">Contributing</option>
-<option value="security">Security</option>
-<option value="license">License</option>
-<option value="changelog">Changelog</option>
-<option value="pr">PR Notes (Detailed)</option>
-</select>
-<button id="insertSectionBtn" class="insert-section-btn" disabled>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-<path d="M12 5v14M5 12h14"/>
-</svg>
-Insert
-</button>
-</div>
-</section>
+				<section class="sections-section">
+					<h2 class="section-title">Sections</h2>
+					<div class="section-list">
+						<button class="section-btn" data-section="badges">
+							<span class="section-icon">+</span> Badges
+						</button>
+						<button class="section-btn" data-section="description">
+							<span class="section-icon">+</span> Description
+						</button>
+						<button class="section-btn" data-section="quickstart">
+							<span class="section-icon">+</span> Quick Start
+						</button>
+						<button class="section-btn" data-section="prerequisites">
+							<span class="section-icon">+</span> Prerequisites
+						</button>
+						<button class="section-btn" data-section="installation">
+							<span class="section-icon">+</span> Installation
+						</button>
+						<button class="section-btn" data-section="configuration">
+							<span class="section-icon">+</span> Configuration
+						</button>
+						<button class="section-btn" data-section="usage">
+							<span class="section-icon">+</span> Usage
+						</button>
+						<button class="section-btn" data-section="testing">
+							<span class="section-icon">+</span> Testing
+						</button>
+						<button class="section-btn" data-section="api">
+							<span class="section-icon">+</span> API Docs
+						</button>
+						<button class="section-btn" data-section="troubleshooting">
+							<span class="section-icon">+</span> Troubleshooting
+						</button>
+						<button class="section-btn" data-section="deployment">
+							<span class="section-icon">+</span> Deployment
+						</button>
+						<button class="section-btn" data-section="contributing">
+							<span class="section-icon">+</span> Contributing
+						</button>
+						<button class="section-btn" data-section="security">
+							<span class="section-icon">+</span> Security
+						</button>
+						<button class="section-btn" data-section="license">
+							<span class="section-icon">+</span> License
+						</button>
+						<button class="section-btn" data-section="changelog">
+							<span class="section-icon">+</span> Changelog
+						</button>
+						<button class="section-btn" data-section="pr">
+							<span class="section-icon">+</span> PR Notes
+						</button>
+					</div>
+				</section>
 				<section class="actions-section">
 					<h2 class="section-title">Actions</h2>
 					<div class="action-list">

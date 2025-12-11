@@ -7,9 +7,10 @@
 
 ## Features
 
+- **Quick PR Template** - One-click technical change summary for pull requests
 - **Live Preview** - Real-time markdown rendering
 - **Find & Replace** - Search with case-sensitivity and whole-word options
-- **16 Section Templates** - Pre-built documentation sections
+- **17 Section Templates** - Pre-built documentation sections
 - **Smart Document Analysis** - Detects existing/missing sections
 - **16 Formatting Tools** - GitHub/Azure DevOps compatible
 - **Smart Prettify** - Auto-format markdown with one click
@@ -112,7 +113,8 @@ When inserting sections with placeholders:
 - Updates automatically as you type
 
 ### Section Templates
-Choose from 16 modern documentation sections:
+Choose from 17 modern documentation sections:
+- **Quick PR Template** - Concise technical changes for pull requests (one-click button at top)
 - **Badges** - Build status, coverage, version shields
 - **Description** - Project overview with key features
 - **Quick Start** - Clone → install → run commands

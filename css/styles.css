@@ -184,6 +184,75 @@ body {
 	padding-left: 4px;
 }
 
+/* Section Controls */
+.section-controls {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.section-dropdown {
+	width: 100%;
+	background: var(--bg-tertiary);
+	border: 1px solid var(--border-subtle);
+	color: var(--text-primary);
+	padding: 10px 12px;
+	border-radius: 6px;
+	font-family: var(--font-ui);
+	font-size: 13px;
+	cursor: pointer;
+	transition: all var(--transition-fast);
+}
+
+.section-dropdown:hover {
+	border-color: var(--accent-primary);
+	background: var(--bg-hover);
+}
+
+.section-dropdown:focus {
+	outline: none;
+	border-color: var(--accent-primary);
+	box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.section-dropdown option {
+	background: var(--bg-secondary);
+	color: var(--text-primary);
+}
+
+.insert-section-btn {
+	width: 100%;
+	background: var(--accent-primary);
+	border: none;
+	color: #ffffff;
+	padding: 12px 16px;
+	border-radius: 6px;
+	cursor: pointer;
+	font-family: var(--font-ui);
+	font-size: 13px;
+	font-weight: 600;
+	transition: all var(--transition-fast);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+
+.insert-section-btn:hover:not(:disabled) {
+	background: var(--accent-hover);
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.insert-section-btn:active:not(:disabled) {
+	transform: translateY(0);
+}
+
+.insert-section-btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
 .formatting-section,
 .sections-section,
 .actions-section {
@@ -249,7 +318,6 @@ body {
 	gap: 6px;
 }
 
-.section-btn,
 .action-btn {
 	background: var(--bg-tertiary);
 	border: 1px solid var(--border-subtle);
@@ -265,49 +333,6 @@ body {
 	align-items: center;
 	gap: 8px;
 	white-space: nowrap;
-}
-
-.section-icon {
-	font-size: 14px;
-	font-weight: 600;
-	min-width: 16px;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-}
-
-/* Section exists state */
-.section-btn.section-exists {
-	border-color: #4ade80;
-	background: rgba(74, 222, 128, 0.1);
-}
-
-.section-btn.section-exists .section-icon {
-	color: #4ade80;
-}
-
-.section-btn.section-exists:hover {
-	background: rgba(74, 222, 128, 0.15);
-	border-color: #4ade80;
-	color: var(--text-primary);
-	transform: none;
-	cursor: default;
-}
-
-/* Section missing state */
-.section-btn.section-missing {
-	border-color: var(--border-subtle);
-}
-
-.section-btn.section-missing .section-icon {
-	color: var(--accent-primary);
-}
-
-.section-btn.section-missing:hover {
-	background: var(--bg-hover);
-	border-color: var(--accent-primary);
-	color: var(--accent-light);
-	transform: translateX(2px);
 }
 
 .action-btn-undo {
@@ -338,7 +363,6 @@ body {
 	transform: translateX(2px);
 }
 
-.section-btn:active,
 .action-btn:active {
 	transform: translateX(2px) scale(0.98);
 }

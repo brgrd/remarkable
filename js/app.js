@@ -28,7 +28,6 @@ const undoBtn = document.getElementById('undoBtn');
 const shortcutsModal = document.getElementById('shortcutsModal');
 const closeShortcuts = document.getElementById('closeShortcuts');
 const formatButtons = document.querySelectorAll('.format-btn');
-const sectionButtons = document.querySelectorAll('.section-btn');
 
 // Word Count and Copy Button
 const wordCountDisplay = document.getElementById('wordCount');
@@ -634,6 +633,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.0]: https://github.com/username/project/releases/tag/v0.1.0
 `,
 
+	quickPR: `## Technical Changes
+
+**Type:** [ Bug Fix | Feature | Refactor | Config | Performance | Documentation ]
+
+**Summary:**
+<!-- One-line description of the change -->
+
+**Modified Components:**
+- 
+
+**Key Changes:**
+- 
+- 
+
+**Dependencies:**
+- None / [ List updated packages/libraries ]
+
+**Database Changes:**
+- None / [ Migrations, schema updates ]
+
+**Configuration:**
+- None / [ Environment variables, config files ]
+
+**Testing:**
+- [ ] Unit tests passing
+- [ ] Integration tests passing
+- [ ] Manual testing complete
+
+**Deployment Notes:**
+<!-- Special instructions or considerations -->
+
+**Rollback:** 
+<!-- How to revert if needed -->
+
+**Ticket:** [PROJ-XXX](https://jira.example.com/browse/PROJ-XXX)
+`,
+
 	pr: `## Summary
 <!-- Brief description of what this PR accomplishes -->
 
@@ -793,7 +829,7 @@ function init() {
 	// Initial render
 	if (editor.value) {
 		updatePreview();
-		updateSectionButtons(); // Analyze loaded document
+		 // Analyze loaded document
 	}
 
 	// Add debug helper to window for troubleshooting
@@ -823,6 +859,22 @@ function setupEventListeners() {
 	sidebarToggle.addEventListener('click', toggleSidebar);
 	mobileSidebarToggle.addEventListener('click', toggleSidebar);
 
+	// Section dropdown and insert button
+	const sectionDropdown = document.getElementById('sectionDropdown');
+	const insertSectionBtn = document.getElementById('insertSectionBtn');
+
+	sectionDropdown.addEventListener('change', () => {
+		insertSectionBtn.disabled = !sectionDropdown.value;
+	});
+
+	insertSectionBtn.addEventListener('click', () => {
+		if (sectionDropdown.value) {
+			insertSection(sectionDropdown.value);
+			sectionDropdown.value = '';
+			insertSectionBtn.disabled = true;
+		}
+	});
+
 	// Preview toggle
 	previewToggle.addEventListener('click', togglePreview);
 
@@ -831,14 +883,6 @@ function setupEventListeners() {
 		btn.addEventListener('click', () => {
 			const format = btn.dataset.format;
 			applyFormatting(format);
-		});
-	});
-
-	// Section buttons
-	sectionButtons.forEach(btn => {
-		btn.addEventListener('click', () => {
-			const section = btn.dataset.section;
-			insertSection(section);
 		});
 	});
 
@@ -913,7 +957,7 @@ function handleEditorInput() {
 	updatePreview();
 
 	// Update section button indicators
-	updateSectionButtons();
+	
 
 	// Auto-save with debounce
 	clearTimeout(saveTimeout);
@@ -1110,7 +1154,8 @@ function analyzeDocument() {
 		security: [/^##?\s*(security|vulnerab)/i],
 		license: [/^##?\s*(license)/i, /mit license/, /apache/],
 		changelog: [/^##?\s*(changelog|releases|history)/i],
-		pr: [/^##?\s*(summary|pr notes|pull request)/i, /type of change/i]
+		pr: [/^##?\s*(summary|pr notes|pull request)/i, /type of change/i],
+		quickPR: [/^##?\s*(technical changes)/i, /key changes/i]
 	};
 
 	const foundSections = {};
@@ -1138,31 +1183,9 @@ function analyzeDocument() {
 	return foundSections;
 }
 
-function updateSectionButtons() {
-	const analysis = analyzeDocument();
-	const sectionButtons = document.querySelectorAll('.section-btn');
-
-	sectionButtons.forEach(btn => {
-		const sectionName = btn.getAttribute('data-section');
-		const icon = btn.querySelector('.section-icon');
-
-		if (analysis[sectionName]) {
-			// Section exists - show checkmark
-			icon.textContent = '✓';
-			btn.classList.add('section-exists');
-			btn.classList.remove('section-missing');
-		} else {
-			// Section missing - show plus
-			icon.textContent = '+';
-			btn.classList.remove('section-exists');
-			btn.classList.add('section-missing');
-		}
-	});
-}
-
 // ===== Section Insertion with Smart Positioning =====
 const sectionOrder = [
-	'badges', 'description', 'quickstart', 'prerequisites', 'installation',
+	'quickPR', 'badges', 'description', 'quickstart', 'prerequisites', 'installation',
 	'configuration', 'usage', 'testing', 'api', 'troubleshooting',
 	'deployment', 'contributing', 'security', 'license', 'changelog', 'pr'
 ];
@@ -1249,7 +1272,7 @@ function insertSection(sectionName) {
 
 		// Trigger update and refresh section indicators
 		handleEditorInput();
-		updateSectionButtons();
+		
 
 		// Save new state to history immediately after insertion
 		saveToHistory();
@@ -1456,7 +1479,7 @@ function processFile(file) {
 		handleEditorInput();
 
 		// Analyze document and update section buttons
-		updateSectionButtons();
+		
 
 		// Show helpful feedback
 		const analysis = analyzeDocument();
