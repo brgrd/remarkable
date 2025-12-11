@@ -9,7 +9,7 @@
 
 - 🎯 **Live Preview** - Real-time markdown rendering
 - 🔍 **Find & Replace** - Search with case-sensitivity and whole-word options
-- 📝 **15 Section Templates** - Pre-built documentation sections
+- 📝 **16 Section Templates** - Pre-built documentation sections
 - 🎨 **Smart Document Analysis** - Detects existing/missing sections
 - 🔤 **16 Formatting Tools** - GitHub/Azure DevOps compatible
 - ✨ **Smart Prettify** - Auto-format markdown with one click
@@ -112,7 +112,7 @@ When inserting sections with placeholders:
 - Updates automatically as you type
 
 ### Section Templates
-Choose from 15 modern documentation sections:
+Choose from 16 modern documentation sections:
 - **Badges** - Build status, coverage, version shields
 - **Description** - Project overview with key features
 - **Quick Start** - Clone → install → run commands
@@ -128,6 +128,7 @@ Choose from 15 modern documentation sections:
 - **Security** - Vulnerability reporting
 - **License** - MIT license boilerplate
 - **Changelog** - Version history format
+- **PR Notes** - Pull request template for AWS CodeCommit
 
 ### Formatting Tools
 16 GitHub/Azure DevOps compatible formatting options:

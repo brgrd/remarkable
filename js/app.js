@@ -634,50 +634,81 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.1.0]: https://github.com/username/project/releases/tag/v0.1.0
 `,
 
-	pr: `## Description
-<!-- Provide a brief description of the changes in this PR -->
+	pr: `## Summary
+<!-- Brief description of what this PR accomplishes -->
+
 
 ## Type of Change
-<!-- Mark relevant items with an 'x' -->
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] Documentation update
-- [ ] Performance improvement
-- [ ] Code refactoring
-
-## Related Issues
-<!-- Link to related issues using #issue_number -->
-Fixes #
-Related to #
+- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
+- [ ] ✨ New feature (non-breaking change which adds functionality)
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to change)
+- [ ] 📝 Documentation update
+- [ ] ⚡ Performance improvement
+- [ ] ♻️ Code refactoring
+- [ ] 🔧 Configuration change
+- [ ] 🎨 UI/UX improvement
 
 ## Changes Made
-<!-- List the specific changes made in this PR -->
+<!-- Detailed list of changes -->
 - 
 - 
 - 
 
-## Testing
-<!-- Describe the tests you ran and how to reproduce them -->
+## Testing Performed
 - [ ] Tested locally
-- [ ] Added unit tests
-- [ ] All tests passing
-- [ ] Tested on multiple browsers/environments
+- [ ] Unit tests added/updated
+- [ ] Integration tests passing
+- [ ] Manual testing completed
+- [ ] No new warnings or errors
 
-## Screenshots
-<!-- If applicable, add screenshots to help explain your changes -->
+**Test Evidence:**
+<!-- Screenshots, logs, or test results -->
+
+
+## Impact Analysis
+<!-- What systems/components are affected? -->
+**Affected Components:**
+- 
+
+**Breaking Changes:**
+- None / [Describe any breaking changes]
+
+**Dependencies Updated:**
+- None / [List any dependency changes]
+
+## Deployment Notes
+<!-- Any special deployment considerations -->
+- [ ] Database migrations required
+- [ ] Configuration changes needed
+- [ ] Infrastructure updates required
+- [ ] Feature flags to toggle
+
+**Deployment Steps:**
+1. 
+2. 
+
+## Rollback Plan
+<!-- How to rollback if issues arise -->
+
+
+## Related Items
+<!-- Link to tickets, issues, or documentation -->
+**Jira:** [PROJ-XXX](https://jira.example.com/browse/PROJ-XXX)
+**Related PRs:** 
+**Documentation:** 
 
 ## Checklist
-- [ ] My code follows the project's style guidelines
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
+- [ ] Code follows team style guidelines
+- [ ] Self-review completed
+- [ ] Code comments added where needed
+- [ ] Documentation updated
+- [ ] No sensitive data in code
+- [ ] Error handling implemented
+- [ ] Logging added appropriately
 
-## Additional Notes
-<!-- Any additional information that reviewers should know -->
+## Reviewer Notes
+<!-- Anything specific for reviewers to focus on -->
+
 `,
 
 	issue: `## Description
@@ -1078,7 +1109,8 @@ function analyzeDocument() {
 		contributing: [/^##?\s*(contribut)/i],
 		security: [/^##?\s*(security|vulnerab)/i],
 		license: [/^##?\s*(license)/i, /mit license/, /apache/],
-		changelog: [/^##?\s*(changelog|releases|history)/i]
+		changelog: [/^##?\s*(changelog|releases|history)/i],
+		pr: [/^##?\s*(summary|pr notes|pull request)/i, /type of change/i]
 	};
 
 	const foundSections = {};
@@ -1132,7 +1164,7 @@ function updateSectionButtons() {
 const sectionOrder = [
 	'badges', 'description', 'quickstart', 'prerequisites', 'installation',
 	'configuration', 'usage', 'testing', 'api', 'troubleshooting',
-	'deployment', 'contributing', 'security', 'license', 'changelog'
+	'deployment', 'contributing', 'security', 'license', 'changelog', 'pr'
 ];
 
 function findInsertionPoint(sectionName) {

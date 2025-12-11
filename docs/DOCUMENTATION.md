@@ -15,7 +15,7 @@
 - **Live Preview** - See your formatted markdown in real-time as you type
 - **Word Count Stats** - Live word, character, and line count displayed in sidebar footer
 - **Find & Replace** - Search with case-sensitivity and whole-word options, replace single or all matches
-- **15 Section Templates** - Pre-built sections for modern documentation (Badges, Quick Start, Testing, Security, etc.)
+- **16 Section Templates** - Pre-built sections for modern documentation (Badges, Quick Start, Testing, Security, PR Notes, etc.)
 - **Smart Document Analysis** - Automatically detects existing sections and shows what's missing
 - **Intelligent Insertion** - New sections insert in logical positions, not just at the end
 - **Template Variables** - Prompts for project details (username, repo, email) when inserting sections with placeholders
