@@ -1,4 +1,4 @@
-# ReMarkAble
+# REMARKABLE
 
 **A minimalist markdown formatter and editor for software development teams.**
 
@@ -26,12 +26,12 @@
 ## Quick Start
 
 ### Use Online
-Visit: **[https://brgrd.github.io/ReMarkAble](https://brgrd.github.io/ReMarkAble)**
+Visit: **[https://brgrd.github.io/remarkable](https://brgrd.github.io/remarkable)**
 
 ### Run Locally
 ```bash
-git clone https://github.com/brgrd/ReMarkAble.git
-cd ReMarkAble
+git clone https://github.com/brgrd/remarkable.git
+cd remarkable
 python -m http.server 8000
 # Visit http://localhost:8000
 ```
@@ -58,7 +58,7 @@ python -m http.server 8000
 ## Project Structure
 
 ```
-ReMarkAble/
+remarkable/
 ├── index.html              # Main application
 ├── css/
 │   └── styles.css          # All styles
@@ -172,7 +172,7 @@ An "Undo" button appears for 5 seconds after prettifying.
 
 ## Theme
 
-ReMarkAble uses a carefully crafted dark theme optimized for long editing sessions:
+REMARKABLE uses a carefully crafted dark theme optimized for long editing sessions:
 - **Base Colors**: Dark grey (#1e1e1e, #2d2d2d)
 - **Accent**: White (#ffffff) with subtle red for warnings/indicators
 - **Fonts**: 
@@ -212,10 +212,10 @@ Content is stored in browser localStorage:
    git add .
    
    # Commit
-   git commit -m "Initial commit: ReMarkAble markdown formatter"
+   git commit -m "Initial commit: REMARKABLE markdown formatter"
    
    # Create repository on GitHub, then:
-   git remote add origin https://github.com/brgrd/ReMarkAble.git
+   git remote add origin https://github.com/brgrd/remarkable.git
    git branch -M main
    git push -u origin main
    ```
@@ -226,7 +226,7 @@ Content is stored in browser localStorage:
    - Under "Source", select **Deploy from a branch**
    - Select branch: **main** and folder: **/ (root)**
    - Click **Save**
-   - Your site will be live at `https://brgrd.github.io/ReMarkAble` in 1-2 minutes
+   - Your site will be live at `https://brgrd.github.io/remarkable` in 1-2 minutes
 
 ### Making Updates
 
@@ -307,4 +307,4 @@ Created for the developer community
 
 ---
 
-**ReMarkAble** - Make your markdown remarkable.
+**REMARKABLE** - Make your markdown remarkable.

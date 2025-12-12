@@ -133,7 +133,9 @@ body {
 .logo-main {
 	display: flex;
 	align-items: baseline;
-	gap: 4px;
+	gap: 0;
+	color: var(--accent-primary);
+	text-shadow: 0 0 8px rgba(255, 255, 255, 0.18);
 }
 
 .logo-hash {
@@ -144,7 +146,9 @@ body {
 }
 
 .logo-highlight {
-	color: var(--accent-primary);
+	font-weight: 700;
+	color: var(--text-secondary);
+	text-shadow: none;
 }
 
 .logo-ext {
