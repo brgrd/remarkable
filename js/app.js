@@ -123,10 +123,11 @@ function setupModalListeners() {
 // ===== Section Templates =====
 const sections = {
 	badges: `<!-- Badges -->
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![GitHub](https://img.shields.io/badge/github-{{username}}/{{repo}}-000000?style=flat&logo=github)
+![Build Status](https://img.shields.io/badge/build-{{buildStatus}}-brightgreen)
 ![Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
-![License](https://img.shields.io/badge/license-MIT-blue)
+![Version](https://img.shields.io/badge/version-{{buildVersion}}-blue)
+![License](https://img.shields.io/badge/license-{{licenseType}}-blue)
 
 `,
 
@@ -331,13 +332,15 @@ All notable changes to this project will be documented here.
 #### Fixed
 - Bug fix for issue #123
 
-### [1.0.0] - 2025-01-01
+### [{{buildVersion}}] - {{date}}
 #### Added
 - Initial release
 
 `,
 
 	quickPR: `# PR: {{prTitle}}
+
+**Date:** {{date}}
 
 ## Overview
 <!-- Brief description of what this PR accomplishes and why -->
@@ -855,23 +858,52 @@ function setupEventListeners() {
 	const templateDropdown = document.getElementById('templateDropdown');
 	const insertTemplateBtn = document.getElementById('insertTemplateBtn');
 
+	// Update dropdown options with checkmarks for existing templates
+	function updateTemplateDropdown() {
+		const analysis = analyzeDocument();
+		const options = templateDropdown.querySelectorAll('option');
+		
+		// Check if selected template already exists
+		if (templateDropdown.value && analysis[templateDropdown.value]) {
+			insertTemplateBtn.classList.add('template-exists');
+			insertTemplateBtn.title = 'Template already exists in document';
+		} else {
+			insertTemplateBtn.classList.remove('template-exists');
+			insertTemplateBtn.title = '';
+		}
+	}
+
 	templateDropdown.addEventListener('change', () => {
 		insertTemplateBtn.disabled = !templateDropdown.value;
+		updateTemplateDropdown();
 	});
 
 	insertTemplateBtn.addEventListener('click', () => {
 		if (templateDropdown.value) {
-			insertTemplate(templateDropdown.value);
-			templateDropdown.value = '';
+			const selectedValue = templateDropdown.value;
+			insertTemplate(selectedValue);
 			insertTemplateBtn.disabled = true;
+			// Keep the dropdown value so the checkmark appears, don't clear it yet
 		}
 	});
+
+	// Update dropdown checkmarks on editor input
+	let updateDropdownTimeout;
+	editor.addEventListener('input', () => {
+		clearTimeout(updateDropdownTimeout);
+		updateDropdownTimeout = setTimeout(() => {
+			updateTemplateDropdown();
+		}, 100);
+	});
+
+	// Initial update
+	updateTemplateDropdown();
 
 	// Template variable inputs - save to localStorage on change
 	const templateVarInputs = [
 		'projectNameInput', 'usernameInput', 'repoInput',
 		'ticketNumberInput', 'prTitleInput', 'apiUrlInput', 'contactEmailInput',
-		'projectDescInput', 'licenseTypeInput'
+		'projectDescInput', 'licenseTypeInput', 'buildStatusInput', 'buildVersionInput', 'dateInput'
 	];
 
 	templateVarInputs.forEach(inputId => {
@@ -889,6 +921,32 @@ function setupEventListeners() {
 			});
 		}
 	});
+
+	// Restore template variables from localStorage
+	const savedTemplateVars = localStorage.getItem('templateVariables');
+	if (savedTemplateVars) {
+		try {
+			const templateVars = JSON.parse(savedTemplateVars);
+			templateVarInputs.forEach(inputId => {
+				const input = document.getElementById(inputId);
+				if (input && templateVars[inputId]) {
+					input.value = templateVars[inputId];
+				}
+			});
+		} catch (e) {
+			console.error('Error restoring template variables:', e);
+		}
+	}
+
+	// Initialize date input with today's date if not already set
+	const dateInput = document.getElementById('dateInput');
+	if (dateInput && !dateInput.value) {
+		const today = new Date();
+		const year = today.getFullYear();
+		const month = String(today.getMonth() + 1).padStart(2, '0');
+		const day = String(today.getDate()).padStart(2, '0');
+		dateInput.value = `${year}-${month}-${day}`;
+	}
 
 
 	// Preview toggle
@@ -1155,21 +1213,21 @@ function analyzeDocument() {
 
 	// Define section patterns and their variations
 	const sectionPatterns = {
-		badges: [/!\[.*?\]\(https:\/\/img\.shields\.io/, /badge/, /build.*status/, /coverage/],
+		badges: [/!\[.*?\]\(https:\/\/img\.shields\.io/i, /badge/i, /build.*status/i, /coverage/i],
 		description: [/^##?\s*(description|about|overview)/i, /^##?\s*what is/i],
 		quickstart: [/^##?\s*(quick start|quickstart|getting started)/i],
 		prerequisites: [/^##?\s*(prerequisites|requirements|dependencies)/i],
 		installation: [/^##?\s*(installation|install|setup)/i],
-		configuration: [/^##?\s*(configuration|config|environment)/i, /\.env/],
+		configuration: [/^##?\s*(configuration|config|environment)/i, /\.env/i],
 		usage: [/^##?\s*(usage|how to use|examples)/i],
-		testing: [/^##?\s*(test|testing)/i, /npm test/, /jest/, /mocha/],
+		testing: [/^##?\s*(test|testing)/i, /npm test/i, /jest/i, /mocha/i],
 		api: [/^##?\s*(api|endpoints|reference)/i],
 		troubleshooting: [/^##?\s*(troubleshoot|faq|common issues)/i],
 		deployment: [/^##?\s*(deploy|deployment|production)/i],
 		contributing: [/^##?\s*(contribut)/i],
 		security: [/^##?\s*(security|vulnerab)/i],
-		license: [/^##?\s*(license)/i, /mit license/, /apache/],
-		changelog: [/^##?\s*(changelog|releases|history)/i],
+		license: [/^##?\s*(license)/i, /^## license/i, /mit license/i, /apache/i],
+		changelog: [/^##?\s*(changelog|releases|history)/i, /^## changelog/i],
 		quickPR: [/^##?\s*(technical changes)/i, /key changes/i]
 	};
 
@@ -1288,6 +1346,17 @@ function insertTemplate(templateName) {
 		// Trigger update and refresh template indicators
 		handleEditorInput();
 
+		// Update dropdown checkmarks to reflect newly inserted template
+		updateTemplateDropdown();
+
+		// Clear the dropdown now that the template is inserted and checkmark is visible
+		templateDropdown.value = '';
+		insertTemplateBtn.disabled = true;
+
+		// Force another update after a brief delay to ensure checkmarks display
+		setTimeout(() => {
+			updateTemplateDropdown();
+		}, 50);
 
 		// Save new state to history immediately after insertion
 		saveToHistory();
@@ -1306,7 +1375,10 @@ async function processTemplateVariables(template, sectionName) {
 		apiUrl: document.getElementById('apiUrlInput')?.value || 'https://api.example.com/v1',
 		contactEmail: document.getElementById('contactEmailInput')?.value || 'contact@example.com',
 		projectDesc: document.getElementById('projectDescInput')?.value || 'A clear and concise description of what this project does and who it\'s for.',
-		licenseType: document.getElementById('licenseTypeInput')?.value || 'MIT'
+		licenseType: document.getElementById('licenseTypeInput')?.value || 'MIT',
+		buildStatus: document.getElementById('buildStatusInput')?.value || 'passing',
+		buildVersion: document.getElementById('buildVersionInput')?.value || '1.0.0',
+		date: document.getElementById('dateInput')?.value || new Date().toISOString().split('T')[0]
 	};
 
 	// Replace placeholders in template
@@ -1317,28 +1389,6 @@ async function processTemplateVariables(template, sectionName) {
 	});
 
 	return result;
-}
-
-// ===== Template Insertion (for backward compatibility) =====
-function insertTemplate(templateName) {
-	const template = fullTemplates[templateName];
-	if (!template) return;
-
-	const start = editor.selectionStart;
-	const end = editor.selectionEnd;
-	const currentContent = editor.value;
-
-	// Insert template at cursor position
-	const newContent = currentContent.substring(0, start) + template + currentContent.substring(end);
-	editor.value = newContent;
-
-	// Move cursor to end of inserted template
-	const newCursorPos = start + template.length;
-	editor.setSelectionRange(newCursorPos, newCursorPos);
-	editor.focus();
-
-	// Trigger update
-	handleEditorInput();
 }
 
 // ===== File Upload =====

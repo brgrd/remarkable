@@ -11,11 +11,11 @@
 	--text-secondary: #b0b0b0;
 	--text-muted: #808080;
 
-	/* Purple Accent Colors */
-	--accent-primary: #a100ff;
-	--accent-hover: #8a00d4;
-	--accent-light: #c44aff;
-	--accent-glow: rgba(161, 0, 255, 0.3);
+	/* Accent Colors - Now gray/white instead of purple */
+	--accent-primary: #ffffff;
+	--accent-hover: #e0e0e0;
+	--accent-light: #b0b0b0;
+	--accent-glow: rgba(255, 255, 255, 0.1);
 
 	/* Border Colors */
 	--border-color: #404040;
@@ -139,7 +139,7 @@ body {
 .logo-hash {
 	color: var(--accent-primary);
 	font-weight: 700;
-	font-size: 28px;
+	font-size: 20px;
 	line-height: 1;
 }
 
@@ -228,7 +228,7 @@ body {
 	font-size: 13px;
 	cursor: pointer;
 	transition: all var(--transition-fast);
-	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23b0b0b0' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 12px;
@@ -264,9 +264,9 @@ body {
 
 .insert-template-btn {
 	width: 100%;
-	background: var(--accent-primary);
-	border: none;
-	color: #ffffff;
+	background: var(--bg-hover);
+	border: 1px solid var(--border-color);
+	color: var(--text-primary);
 	padding: 12px 16px;
 	border-radius: 6px;
 	cursor: pointer;
@@ -281,7 +281,9 @@ body {
 }
 
 .insert-template-btn:hover:not(:disabled) {
-	background: var(--accent-hover);
+	background: var(--bg-tertiary);
+	border-color: var(--accent-primary);
+	color: var(--accent-primary);
 	transform: translateY(-1px);
 	box-shadow: 0 2px 8px var(--accent-glow);
 }
@@ -293,6 +295,20 @@ body {
 .insert-template-btn:disabled {
 	opacity: 0.4;
 	cursor: not-allowed;
+}
+
+.insert-template-btn.template-exists {
+	background: #cc3333;
+	border-color: #ff4444;
+	color: #ffffff;
+}
+
+.insert-template-btn.template-exists:hover:not(:disabled) {
+	background: #dd4444;
+	border-color: #ff5555;
+	color: #ffffff;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
 }
 
 .formatting-section,

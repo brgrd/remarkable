@@ -2,15 +2,15 @@
 
 **A minimalist markdown formatter and editor for software development teams.**
 
-![Version](https://img.shields.io/badge/version-1.0.0-a100ff)
-![License](https://img.shields.io/badge/license-MIT-a100ff)
+![Version](https://img.shields.io/badge/version-1.0.0-ffffff)
+![License](https://img.shields.io/badge/license-MIT-ffffff)
 
 ## Features
 
 - **Quick PR Template** - One-click technical change summary for pull requests
 - **Live Preview** - Real-time markdown rendering
 - **Find & Replace** - Search with case-sensitivity and whole-word options
-- **17 Section Templates** - Pre-built documentation sections
+- **16 Section Templates** - Pre-built documentation sections
 - **Smart Document Analysis** - Detects existing/missing sections
 - **16 Formatting Tools** - GitHub/Azure DevOps compatible
 - **Smart Prettify** - Auto-format markdown with one click
@@ -18,9 +18,10 @@
 - **Word Count** - Live statistics (words, characters, lines)
 - **Drag & Drop** - Load files directly into the editor
 - **Auto-Save** - Content persists in localStorage
-- **Dark Theme** - Purple accent (#a100ff)
+- **Dark Theme** - Minimalist black/white design with no accent colors
 - **Mobile Responsive** - Works on all devices
 - **100% Offline** - No server required
+- **Template Variables** - 12 customizable variables (project name, username, version, date, build status, etc.)
 
 ## Quick Start
 
@@ -47,10 +48,6 @@ python -m http.server 8000
 | `Ctrl + Z` | Undo |
 | `Ctrl + /` | Show shortcuts |
 
-## Documentation
-
-For detailed documentation, see [DOCUMENTATION.md](docs/DOCUMENTATION.md)
-
 ## Tech Stack
 
 - **HTML5 + CSS3** - Semantic structure, Grid/Flexbox layout
@@ -67,8 +64,6 @@ ReMarkAble/
 │   └── styles.css          # All styles
 ├── js/
 │   └── app.js              # All logic
-├── docs/
-│   └── DOCUMENTATION.md    # Full documentation
 └── README.md               # This file
 ```
 
@@ -87,11 +82,21 @@ When you upload an existing README or start typing:
 - Duplicate sections are prevented with a helpful notification
 
 ### Template Variables
-When inserting sections with placeholders:
-- A modal prompts you for project details (GitHub username, repo name, email, etc.)
-- Values are cached in localStorage for reuse across sections
-- Hit Enter to quickly confirm, or Cancel to use default placeholders
-- Edit values manually in the editor after insertion if needed
+Customize 12 template variables in the sidebar that auto-populate placeholders:
+- **Project Name** - Used in badges and PR templates
+- **GitHub Username** - For clone URLs and repository links
+- **Repository Name** - For GitHub/repo references
+- **Ticket Number** - For tracking in PR templates
+- **PR Title** - Quick PR template header
+- **API Base URL** - For API documentation sections
+- **Contact Email** - For security vulnerability reporting
+- **Project Description** - For description sections
+- **License Type** - For license sections (MIT, Apache, etc.)
+- **Build Status** - For badges (passing, failing, etc.)
+- **Build Version** - For badges and changelog versions (e.g., 1.0.0, 2.1.3)
+- **Date** - Auto-populated with today's date, used in changelogs and PR dates
+
+All values persist in localStorage and are reused across template insertions. Existing templates are marked with a red indicator button in the dropdown.
 
 ### File Operations
 **Upload Methods:**
@@ -113,7 +118,7 @@ When inserting sections with placeholders:
 - Updates automatically as you type
 
 ### Section Templates
-Choose from 17 modern documentation sections:
+Choose from 16 modern documentation sections:
 - **Quick PR Template** - Concise technical changes for pull requests (one-click button at top)
 - **Badges** - Build status, coverage, version shields
 - **Description** - Project overview with key features
@@ -128,9 +133,8 @@ Choose from 17 modern documentation sections:
 - **Deployment** - Production build & deploy
 - **Contributing** - PR workflow & guidelines
 - **Security** - Vulnerability reporting
-- **License** - MIT license boilerplate
+- **License** - License boilerplate
 - **Changelog** - Version history format
-- **PR Notes** - Pull request template for AWS CodeCommit
 
 ### Formatting Tools
 16 GitHub/Azure DevOps compatible formatting options:
@@ -152,7 +156,7 @@ Click the **Prettify** button to automatically:
 An "Undo" button appears for 5 seconds after prettifying.
 
 ### Undo System
-- **Purple Undo button** - Restores previous state (works for sections, formatting, and typing)
+- **Undo button** - Restores previous state (works for sections, formatting, and typing)
 - Maintains 50 states of history
 - Also works with Ctrl+Z keyboard shortcut
 
@@ -173,7 +177,7 @@ An "Undo" button appears for 5 seconds after prettifying.
 
 ReMarkAble uses a carefully crafted dark theme optimized for long editing sessions:
 - **Base Colors**: Dark grey (#1e1e1e, #2d2d2d)
-- **Accent**: Purple (#a100ff)
+- **Accent**: White (#ffffff) - clean and minimal, no primary accent colors
 - **Fonts**: 
   - UI: Space Grotesk (Google Fonts)
   - Code: Fira Code (Google Fonts)
@@ -252,19 +256,19 @@ Contributions are welcome! Here's how you can help:
 5. **Open a Pull Request**
 
 ### Ideas for Contributions
-- Additional templates (Roadmap, Security Policy, etc.)
-- Enhanced prettify algorithms
+- Additional templates (Roadmap, Security Policy, Governance, etc.)
+- Enhanced prettify algorithms for complex markdown
 - Export to other formats (HTML, PDF)
 - Dark/light theme toggle
-- Custom template creator
+- Custom template creator interface
 - Markdown cheat sheet panel
-- Find & replace functionality
+- Advanced Find & Replace features (regex support)
 
 ## Known Issues
 
 - Scroll sync may not be pixel-perfect with very large documents
-- LocalStorage limit (~5MB) may be reached with extremely large documents
-- Some advanced markdown extensions (footnotes, task lists) depend on marked.js support
+- LocalStorage limit (~5MB) may be reached with extremely large documents (>50,000 words)
+- Some advanced markdown syntax (footnotes, complex tables) depends on marked.js parser support
 
 ## License
 
