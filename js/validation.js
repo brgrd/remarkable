@@ -1,7 +1,5 @@
-// Markdown validation helpers.
-// Pure functions only; no DOM access here.
 (function () {
-	function validateMarkdownContent(content) {
+		function validateMarkdownContent(content) {
 		const lines = content.split('\n');
 		const issues = [];
 		let inBacktickFence = false;
@@ -94,9 +92,106 @@
 			issues.push({ line: tildeFenceLine, message: 'Code fence opened with ~~~ is not closed.' });
 		}
 
-		return issues;
-	}
+			return issues;
+		}
 
-	window.Validation = { validateMarkdownContent };
-})();
+		function lintMarkdownContent(content, config = {}) {
+			const enabled = config.enabled || {};
+			const maxLineLength = Number.isFinite(config.maxLineLength) ? config.maxLineLength : 120;
+			const lines = content.split('\n');
+			const issues = [];
 
+			let inBacktickFence = false;
+			let inTildeFence = false;
+			let previousHeadingLevel = null;
+
+			function isBlank(line) {
+				return (line ?? '').trim().length === 0;
+			}
+
+			if (enabled.MD041) {
+				const firstNonBlankIndex = lines.findIndex((l) => !isBlank(l));
+				if (firstNonBlankIndex !== -1 && !/^#\s+/.test(lines[firstNonBlankIndex])) {
+					issues.push({
+						rule: 'MD041',
+						line: firstNonBlankIndex + 1,
+						message: 'First line should be a top-level heading (# ...).'
+					});
+				}
+			}
+
+			lines.forEach((line, index) => {
+				const lineNumber = index + 1;
+				const trimmed = line.trim();
+				const normalizedLine = line.replace(/^\s+/, '');
+				const isBacktickFence = trimmed.startsWith('```');
+				const isTildeFence = trimmed.startsWith('~~~');
+
+				if (isBacktickFence && !inTildeFence) {
+					inBacktickFence = !inBacktickFence;
+					return;
+				}
+				if (isTildeFence && !inBacktickFence) {
+					inTildeFence = !inTildeFence;
+					return;
+				}
+
+				if (inBacktickFence || inTildeFence) return;
+
+				const headingMatch = normalizedLine.match(/^(#{1,6})\s+/);
+				if (headingMatch) {
+					const level = headingMatch[1].length;
+
+					if (enabled.MD001 && previousHeadingLevel !== null && level > previousHeadingLevel + 1) {
+						issues.push({
+							rule: 'MD001',
+							line: lineNumber,
+							message: `Heading levels should only increment by one level at a time (found H${level} after H${previousHeadingLevel}).`
+						});
+					}
+					previousHeadingLevel = level;
+
+					if (enabled.MD022) {
+						const prev = lines[index - 1];
+						const next = lines[index + 1];
+						if (index > 0 && !isBlank(prev)) {
+							issues.push({
+								rule: 'MD022',
+								line: lineNumber,
+								message: 'Headings should be preceded by a blank line.'
+							});
+						}
+						if (index < lines.length - 1 && !isBlank(next)) {
+							issues.push({
+								rule: 'MD022',
+								line: lineNumber,
+								message: 'Headings should be followed by a blank line.'
+							});
+						}
+					}
+				}
+
+				if (enabled.MD013 && line.length > maxLineLength) {
+					issues.push({
+						rule: 'MD013',
+						line: lineNumber,
+						message: `Line length (${line.length}) exceeds maximum of ${maxLineLength}.`
+					});
+				}
+			});
+
+			if (enabled.MD047) {
+				if (content.length > 0 && !content.endsWith('\n')) {
+					issues.push({
+						rule: 'MD047',
+						line: lines.length,
+						message: 'File should end with a single newline.'
+					});
+				}
+			}
+
+			return issues;
+		}
+
+		window.Validation = { validateMarkdownContent, lintMarkdownContent };
+	})();

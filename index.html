@@ -5,21 +5,16 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>REMARKABLE - Markdown Formatter & Editor</title>
-	<meta name="description"
-		content="REMARKABLE is a minimalist markdown formatter for dev teams. Smart section detection, templates, GitHub/Azure DevOps compatible formatting. 100% client-side, fully offline.">
+		<meta name="description"
+			content="REMARKABLE is a minimalist, client-side markdown editor with templates, find/replace, linting, and live preview.">
 	<meta name="keywords"
 		content="markdown, editor, formatter, documentation, README, GitHub, Azure DevOps, developer tools">
 	<meta name="author" content="REMARKABLE">
 
-	<!-- Open Graph / Social Media -->
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="REMARKABLE - Make Your Markdown Remarkable">
 	<meta property="og:description"
 		content="Smart markdown editor with section detection, 16 templates, and GitHub-compatible formatting. Perfect for dev teams.">
-	<meta property="og:url" content="https://brgrd.github.io/remarkable">
-
-	<!-- Favicon (optional - add later) -->
-	<!-- <link rel="icon" type="image/svg+xml" href="favicon.svg"> -->
 
 	<link rel="stylesheet" href="css/styles.css">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +26,6 @@
 
 <body>
 	<div class="container">
-		<!-- Left Sidebar -->
 		<aside id="sidebar" class="sidebar">
 			<div class="sidebar-header">
 					<h1 class="logo">
@@ -190,16 +184,12 @@
 					<h2 class="section-title">Template Variables</h2>
 					<div class="template-vars-form">
 						<div class="form-group">
-							<label for="projectNameInput">Project Name</label>
-							<input type="text" id="projectNameInput" placeholder="My Awesome Project">
-						</div>
-						<div class="form-group">
 							<label for="usernameInput">GitHub Username</label>
 							<input type="text" id="usernameInput" placeholder="username">
 						</div>
 						<div class="form-group">
-							<label for="repoInput">Repository Name</label>
-							<input type="text" id="repoInput" placeholder="repo">
+							<label for="projectNameInput">Project Name</label>
+							<input type="text" id="projectNameInput" placeholder="my-project">
 						</div>
 						<div class="form-group">
 							<label for="ticketNumberInput">Ticket Number</label>
@@ -243,8 +233,8 @@
 				<section class="templates-section">
 					<h2 class="section-title">Templates</h2>
 					<div class="template-controls">
-							<select id="templateDropdown" class="template-dropdown" required>
-								<option value="" selected hidden></option>
+						<select id="templateDropdown" class="template-dropdown" required>
+							<option value="" disabled selected hidden></option>
 							<option value="quickPR">PR</option>
 							<option value="badges">Badges</option>
 							<option value="description">Description</option>
@@ -343,9 +333,17 @@
 									<input type="checkbox" id="wholeWord" />
 									<span>Whole word</span>
 								</label>
+								<label class="checkbox-label">
+									<input type="checkbox" id="regexMode" />
+									<span>Regex</span>
+								</label>
+								<label class="checkbox-label">
+									<input type="checkbox" id="selectionOnly" />
+									<span>In selection</span>
+								</label>
 							</div>
-						</div>
-						<div class="find-replace-status" id="findStatus"></div>
+					</div>
+						<div class="find-replace-results" id="findResults" aria-live="polite"></div>
 						<div class="find-replace-buttons">
 							<button id="findPrevBtn" class="find-btn">Previous</button>
 							<button id="findNextBtn" class="find-btn">Next</button>
@@ -355,7 +353,44 @@
 						</div>
 					</div>
 				</section>
-			</div>
+					<section class="lint-section">
+						<h2 class="section-title">Lint</h2>
+						<div class="lint-panel" id="lintPanel">
+							<div class="lint-controls">
+								<button id="lintBtn" class="action-btn">Run Lint</button>
+								<div class="lint-rules">
+									<label class="checkbox-label lint-checkbox">
+										<input type="checkbox" id="lintMD001" checked />
+										<span>MD001 Heading levels</span>
+									</label>
+									<label class="checkbox-label lint-checkbox">
+										<input type="checkbox" id="lintMD022" checked />
+										<span>MD022 Blank lines around headings</span>
+									</label>
+									<label class="checkbox-label lint-checkbox">
+										<input type="checkbox" id="lintMD041" checked />
+										<span>MD041 First line heading</span>
+									</label>
+									<label class="checkbox-label lint-checkbox">
+										<input type="checkbox" id="lintMD047" checked />
+										<span>MD047 File ends with newline</span>
+									</label>
+									<div class="lint-line-length">
+										<label class="checkbox-label lint-checkbox">
+											<input type="checkbox" id="lintMD013" />
+											<span>MD013 Line length</span>
+										</label>
+										<div class="lint-inline">
+											<span>Max</span>
+											<input type="number" id="lintLineLength" min="40" max="300" value="120" />
+										</div>
+									</div>
+							</div>
+						</div>
+						<div class="lint-issues" id="lintIssues"></div>
+					</div>
+				</section>
+				</div>
 
 			<div class="sidebar-footer">
 				<div id="wordCount" class="word-count">
@@ -375,32 +410,37 @@
 			</div>
 		</aside>
 
-		<!-- Mobile Sidebar Toggle -->
 		<button id="mobileSidebarToggle" class="mobile-sidebar-toggle" aria-label="Toggle sidebar">
 			<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
 				<path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
 			</svg>
 		</button>
 
-		<!-- Editor Pane -->
-		<main class="editor-pane">
-			<div id="dropZone" class="drop-zone">
-				<div class="drop-zone-content">
-					<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-						stroke-width="1.5">
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-						<polyline points="17 8 12 3 7 8"></polyline>
-						<line x1="12" y1="3" x2="12" y2="15"></line>
-					</svg>
-					<h3>Drop your markdown file here</h3>
-					<p>Supports .md, .txt, and .markdown files</p>
+			<main class="editor-pane">
+				<div id="dropZone" class="drop-zone">
+					<div class="drop-zone-content">
+						<svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+							stroke-width="1.5">
+							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+							<polyline points="17 8 12 3 7 8"></polyline>
+							<line x1="12" y1="3" x2="12" y2="15"></line>
+						</svg>
+						<h3>Drop your markdown file here</h3>
+						<p>Supports .md, .txt, and .markdown files</p>
+					</div>
 				</div>
-			</div>
-			<textarea id="editor" class="editor" placeholder="Start typing your markdown here..."
-				spellcheck="false"></textarea>
-		</main>
+				<div class="editor-wrapper">
+					<div id="editorGutter" class="editor-gutter" aria-hidden="true"></div>
+					<div class="editor-content">
+						<div id="editorLintOverlay" class="editor-lint-overlay" aria-hidden="true"></div>
+						<div id="editorHighlights" class="editor-highlights" aria-hidden="true"></div>
+						<textarea id="editor" class="editor" placeholder="Start typing your markdown here..."
+							spellcheck="false" wrap="off"></textarea>
+					</div>
+				</div>
+				<div id="editorTooltip" class="editor-tooltip" role="tooltip" aria-hidden="true"></div>
+			</main>
 
-		<!-- Preview Pane -->
 		<aside class="preview-pane">
 			<div class="preview-header">
 				<h2 class="preview-title">Preview</h2>
@@ -423,13 +463,11 @@
 		</aside>
 	</div>
 
-	<!-- Undo Toast -->
 	<div id="undoToast" class="undo-toast">
 		<span>Content prettified</span>
 		<button id="undoBtn" class="undo-btn">Undo</button>
 	</div>
 
-	<!-- Keyboard Shortcuts Modal -->
 	<div id="shortcutsModal" class="shortcuts-modal">
 		<div class="shortcuts-content">
 			<h2>Keyboard Shortcuts</h2>
@@ -463,7 +501,6 @@
 		</div>
 	</div>
 
-	<!-- Custom Modal -->
 	<div id="customModal" class="custom-modal">
 		<div class="custom-modal-content">
 			<div class="custom-modal-icon" id="modalIcon"></div>

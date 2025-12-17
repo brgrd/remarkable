@@ -1,4 +1,3 @@
-// Shared utility helpers.
 (function () {
 	function debounce(fn, delayMs) {
 		let timeoutId;
@@ -10,4 +9,3 @@
 
 	window.Utils = { debounce };
 })();
-

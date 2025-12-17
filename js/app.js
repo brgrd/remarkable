@@ -1,14 +1,17 @@
-// ===== State Management =====
 let editorState = {
 	content: '',
 	sidebarCollapsed: false,
 	previewVisible: true,
 	prettifySnapshot: null,
 	undoTimeout: null,
-	modalResolve: null
+	modalResolve: null,
+	cursor: {
+		start: 0,
+		end: 0,
+		isKnown: false
+	}
 };
 
-// ===== DOM Elements =====
 const editor = document.getElementById('editor');
 const preview = document.getElementById('preview');
 const sidebar = document.getElementById('sidebar');
@@ -30,16 +33,13 @@ const closeShortcuts = document.getElementById('closeShortcuts');
 const formatButtons = document.querySelectorAll('.format-btn');
 const shortcutsHint = document.getElementById('shortcutsHint');
 
-// Word Count and Copy Button
 const wordCountDisplay = document.getElementById('wordCount');
 const copyMarkdownBtn = document.getElementById('copyMarkdownBtn');
 const validateBtn = document.getElementById('validateBtn');
 
-// Drag and Drop
 const dropZone = document.getElementById('dropZone');
 const editorPane = document.querySelector('.editor-pane');
 
-// Custom Modal Elements
 const customModal = document.getElementById('customModal');
 const modalIcon = document.getElementById('modalIcon');
 const modalTitle = document.getElementById('modalTitle');
@@ -47,18 +47,34 @@ const modalMessage = document.getElementById('modalMessage');
 const modalConfirm = document.getElementById('modalConfirm');
 const modalCancel = document.getElementById('modalCancel');
 
-// Find & Replace Elements
 const findInput = document.getElementById('findInput');
 const replaceInput = document.getElementById('replaceInput');
 const caseSensitive = document.getElementById('caseSensitive');
 const wholeWord = document.getElementById('wholeWord');
-const findStatus = document.getElementById('findStatus');
+const regexMode = document.getElementById('regexMode');
+const selectionOnly = document.getElementById('selectionOnly');
+const findResults = document.getElementById('findResults');
 const findPrevBtn = document.getElementById('findPrevBtn');
 const findNextBtn = document.getElementById('findNextBtn');
 const replaceBtn = document.getElementById('replaceBtn');
 const replaceAllBtn = document.getElementById('replaceAllBtn');
 const closeFindReplace = document.getElementById('closeFindReplace');
 const findReplacePanel = document.getElementById('findReplacePanel');
+const templateDropdown = document.getElementById('templateDropdown');
+const insertTemplateBtn = document.getElementById('insertTemplateBtn');
+const editorHighlights = document.getElementById('editorHighlights');
+const editorLintOverlay = document.getElementById('editorLintOverlay');
+const editorGutter = document.getElementById('editorGutter');
+const editorTooltip = document.getElementById('editorTooltip');
+
+const lintBtn = document.getElementById('lintBtn');
+const lintIssuesEl = document.getElementById('lintIssues');
+const lintMD001 = document.getElementById('lintMD001');
+const lintMD013 = document.getElementById('lintMD013');
+const lintMD022 = document.getElementById('lintMD022');
+const lintMD041 = document.getElementById('lintMD041');
+const lintMD047 = document.getElementById('lintMD047');
+const lintLineLength = document.getElementById('lintLineLength');
 
 let findReplaceController = null;
 let formattingController = null;
@@ -67,7 +83,109 @@ let uiController = null;
 let previewController = null;
 let filesController = null;
 
-// ===== UI Delegates =====
+function captureEditorSelection() {
+	if (!editor) return;
+	const start = Number.isFinite(editor.selectionStart) ? editor.selectionStart : 0;
+	const end = Number.isFinite(editor.selectionEnd) ? editor.selectionEnd : start;
+	editorState.cursor = { start, end, isKnown: true };
+}
+
+function restoreEditorSelection({ forceEndIfUnknown = true } = {}) {
+	if (!editor) return;
+	const contentLength = editor.value.length;
+
+	if (!editorState.cursor?.isKnown) {
+		editor.focus();
+		if (forceEndIfUnknown) {
+			editor.setSelectionRange(contentLength, contentLength);
+			editorState.cursor = { start: contentLength, end: contentLength, isKnown: true };
+		}
+		return;
+	}
+
+	const start = Math.max(0, Math.min(editorState.cursor.start, contentLength));
+	const end = Math.max(0, Math.min(editorState.cursor.end, contentLength));
+	editor.focus();
+	editor.setSelectionRange(start, end);
+}
+
+function getEditorSelectionRange() {
+	if (!editor) return { start: 0, end: 0, isKnown: false };
+	if (!editorState.cursor?.isKnown) {
+		return { start: editor.selectionStart || 0, end: editor.selectionEnd || 0, isKnown: false };
+	}
+	return { start: editorState.cursor.start, end: editorState.cursor.end, isKnown: true };
+}
+
+function escapeHtml(text) {
+	return text
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#039;');
+}
+
+function getEditorMetrics() {
+	const style = window.getComputedStyle(editor);
+	const lineHeight = Number.parseFloat(style.lineHeight) || 25.2;
+	const paddingTop = Number.parseFloat(style.paddingTop) || 24;
+	return { lineHeight, paddingTop };
+}
+
+function updateLineNumbers() {
+	if (!editorGutter || !editor) return;
+	const lineCount = editor.value.split('\n').length || 1;
+	const issuesByLine = lintState.issuesByLine;
+	const digits = Math.max(2, String(lineCount).length);
+	const editorStyle = window.getComputedStyle(editor);
+	editorGutter.style.fontSize = editorStyle.fontSize;
+	editorGutter.style.lineHeight = editorStyle.lineHeight;
+	editorGutter.style.paddingTop = editorStyle.paddingTop;
+	editorGutter.style.paddingBottom = editorStyle.paddingBottom;
+
+	const gutterStyle = window.getComputedStyle(editorGutter);
+	const paddingLeft = Number.parseFloat(gutterStyle.paddingLeft) || 0;
+	const paddingRight = Number.parseFloat(gutterStyle.paddingRight) || 0;
+	const borderRight = Number.parseFloat(gutterStyle.borderRightWidth) || 0;
+	const extraPx = Math.ceil(paddingLeft + paddingRight + borderRight + 6);
+	editorGutter.style.width = `calc(${digits}ch + ${extraPx}px)`;
+
+	let html = '';
+	for (let i = 1; i <= lineCount; i++) {
+		const issueClass = issuesByLine?.has(i) ? ' issue' : '';
+		html += `<span class="line${issueClass}">${i}</span>\n`;
+	}
+	editorGutter.innerHTML = html;
+	editorGutter.scrollTop = editor.scrollTop;
+}
+
+function hideEditorTooltip() {
+	if (!editorTooltip) return;
+	editorTooltip.classList.remove('visible');
+	editorTooltip.setAttribute('aria-hidden', 'true');
+	editorTooltip.textContent = '';
+}
+
+function showEditorTooltipAt(x, y, text) {
+	if (!editorTooltip || !text) return;
+	editorTooltip.textContent = text;
+	editorTooltip.style.left = `${x}px`;
+	editorTooltip.style.top = `${y}px`;
+	editorTooltip.classList.add('visible');
+	editorTooltip.setAttribute('aria-hidden', 'false');
+}
+
+function getLineFromMouseEvent(e) {
+	if (!editor) return null;
+	const rect = editor.getBoundingClientRect();
+	const { lineHeight, paddingTop } = getEditorMetrics();
+	const localY = e.clientY - rect.top + editor.scrollTop - paddingTop;
+	const lineIndex = Math.floor(localY / lineHeight);
+	if (Number.isNaN(lineIndex) || lineIndex < 0) return null;
+	return lineIndex + 1;
+}
+
 function showModal(options) {
 	return uiController?.showModal
 		? uiController.showModal(options)
@@ -90,14 +208,11 @@ function hideUndoToast() {
 	uiController?.hideUndoToast?.();
 }
 
-// ===== Template Data =====
 const templateData = window.TemplateData || { sections: {}, templateOrder: [] };
 const sections = templateData.sections;
 const templateOrder = templateData.templateOrder;
 
-// ===== Initialize =====
 function init() {
-	// Initialize UI controller
 	if (window.UI?.createUI) {
 		uiController = window.UI.createUI({
 			editorState,
@@ -112,7 +227,6 @@ function init() {
 		});
 	}
 
-	// Initialize persistence controller and load saved state
 	if (window.Persistence?.createPersistence) {
 		persistenceController = window.Persistence.createPersistence({
 			editor,
@@ -128,10 +242,9 @@ function init() {
 		loadTemplateVariables();
 	}
 
-	// Set up event listeners
 	setupEventListeners();
+	loadLintSettings();
 
-	// Initialize preview controller
 	if (window.Preview?.createPreview) {
 		previewController = window.Preview.createPreview({
 			editor,
@@ -142,7 +255,6 @@ function init() {
 		});
 	}
 
-	// Initialize files controller
 	if (window.Files?.createFiles) {
 		filesController = window.Files.createFiles({
 			editor,
@@ -160,7 +272,6 @@ function init() {
 		filesController.attachListeners();
 	}
 
-	// Initialize Find & Replace controller
 	if (window.FindReplace?.createFindReplace) {
 		findReplaceController = window.FindReplace.createFindReplace({
 			editor,
@@ -168,12 +279,15 @@ function init() {
 			replaceInput,
 			caseSensitive,
 			wholeWord,
-			statusEl: findStatus,
-			panelEl: findReplacePanel
+			regexMode,
+			selectionOnly,
+			resultsEl: findResults,
+			panelEl: findReplacePanel,
+			highlightsEl: editorHighlights,
+			getSelectionRange: getEditorSelectionRange
 		});
 	}
 
-	// Initialize formatting controller
 	if (window.Formatting?.createFormatting) {
 		formattingController = window.Formatting.createFormatting({
 			editor,
@@ -185,87 +299,273 @@ function init() {
 		});
 	}
 
-	// Initial render
 	if (editor.value) {
 		previewController?.updatePreview();
-		// Analyze loaded document
 	}
 
-	// Debug helper removed for production polish.
+	updateLineNumbers();
 }
 
-// ===== Event Listeners Setup =====
+function loadFromLocalStorage() {
+	if (!editor) return;
+	const saved = localStorage.getItem('markdown-content');
+	if (saved) {
+		editor.value = saved;
+		editorState.content = saved;
+		saveToHistory();
+	}
+}
+
+function loadTemplateVariables() {
+	const savedVars = localStorage.getItem('templateVariables');
+	if (!savedVars) return;
+	try {
+		const vars = JSON.parse(savedVars);
+		[
+			'usernameInput',
+			'projectNameInput',
+			'ticketNumberInput',
+			'prTitleInput',
+			'apiUrlInput',
+			'contactEmailInput',
+			'projectDescInput',
+			'licenseTypeInput',
+			'buildStatusInput',
+			'buildVersionInput',
+			'dateInput'
+		].forEach((id) => {
+			const el = document.getElementById(id);
+			if (el && vars[id]) el.value = vars[id];
+		});
+	} catch (e) {
+		console.error('Error restoring template variables:', e);
+	}
+}
+
+const LINT_SETTINGS_KEY = 'lintSettings';
+
+const lintState = {
+	lastIssues: [],
+	issuesByLine: new Set()
+};
+
+function getLintConfigFromUI() {
+	return {
+		enabled: {
+			MD001: Boolean(lintMD001?.checked),
+			MD013: Boolean(lintMD013?.checked),
+			MD022: Boolean(lintMD022?.checked),
+			MD041: Boolean(lintMD041?.checked),
+			MD047: Boolean(lintMD047?.checked)
+		},
+		maxLineLength: Number.parseInt(lintLineLength?.value || '120', 10) || 120
+	};
+}
+
+function loadLintSettings() {
+	const raw = localStorage.getItem(LINT_SETTINGS_KEY);
+	if (!raw) return;
+	try {
+		const settings = JSON.parse(raw);
+		if (lintMD001) lintMD001.checked = settings?.enabled?.MD001 ?? lintMD001.checked;
+		if (lintMD013) lintMD013.checked = settings?.enabled?.MD013 ?? lintMD013.checked;
+		if (lintMD022) lintMD022.checked = settings?.enabled?.MD022 ?? lintMD022.checked;
+		if (lintMD041) lintMD041.checked = settings?.enabled?.MD041 ?? lintMD041.checked;
+		if (lintMD047) lintMD047.checked = settings?.enabled?.MD047 ?? lintMD047.checked;
+		if (lintLineLength && settings?.maxLineLength) lintLineLength.value = String(settings.maxLineLength);
+	} catch {
+	}
+}
+
+function saveLintSettings() {
+	try {
+		localStorage.setItem(LINT_SETTINGS_KEY, JSON.stringify(getLintConfigFromUI()));
+	} catch {
+	}
+}
+
+function jumpToLine(lineNumber) {
+	if (!editor) return;
+	const lines = editor.value.split('\n');
+	const index = Math.max(0, Math.min(lineNumber - 1, lines.length - 1));
+	const startPos = charPosAtLineStart(lines, index);
+	const endPos = startPos + (lines[index]?.length ?? 0);
+	editor.focus();
+	editor.setSelectionRange(startPos, endPos);
+	captureEditorSelection();
+
+	const { lineHeight, paddingTop } = getEditorMetrics();
+	const targetTop = Math.max(0, index * lineHeight);
+	const centerOffset = Math.max(0, (editor.clientHeight / 2) - paddingTop);
+	editor.scrollTop = Math.max(0, targetTop - centerOffset);
+}
+
+function renderLintIssues(issues) {
+	if (!lintIssuesEl) return;
+	if (!issues || issues.length === 0) {
+		lintIssuesEl.innerHTML = '<div class="lint-empty">No issues</div>';
+		return;
+	}
+
+	lintIssuesEl.innerHTML = issues.map((issue) => {
+		const rule = issue.rule || 'LINT';
+		const line = issue.line || 0;
+		const message = issue.message || '';
+		return `<button type="button" class="lint-issue" data-line="${line}"><span class="lint-rule">${rule}</span><span class="lint-line">L${line}</span>${message}</button>`;
+	}).join('');
+
+	lintIssuesEl.querySelectorAll('.lint-issue').forEach((btn) => {
+		btn.addEventListener('click', () => {
+			const line = Number.parseInt(btn.dataset.line || '0', 10);
+			if (line) jumpToLine(line);
+		});
+	});
+}
+
+function runLint() {
+	if (!editor) return;
+	const lintFn = window.Validation?.lintMarkdownContent;
+	if (!lintFn) {
+		renderLintIssues([{ rule: 'LINT', line: 0, message: 'Lint engine not loaded.' }]);
+		return;
+	}
+	saveLintSettings();
+	const issues = lintFn(editor.value, getLintConfigFromUI());
+	lintState.lastIssues = issues;
+	lintState.issuesByLine = new Set(issues.map(i => i.line).filter(Boolean));
+	renderLintIssues(issues);
+	updateLintDecorations();
+	updateLineNumbers();
+}
+
+function updateLintDecorations() {
+	if (!editor || !editorLintOverlay) return;
+	const issuesByLine = {};
+	for (const issue of lintState.lastIssues) {
+		if (!issue?.line) continue;
+		if (!issuesByLine[issue.line]) issuesByLine[issue.line] = [];
+		issuesByLine[issue.line].push(issue);
+	}
+
+	const lines = editor.value.split('\n');
+	let html = '';
+	for (let i = 0; i < lines.length; i++) {
+		const lineNumber = i + 1;
+		const line = lines[i] ?? '';
+		const isIssue = Boolean(issuesByLine[lineNumber]?.length);
+		const cls = isIssue ? 'issue' : '';
+		html += `<span class="${cls}">${line ? escapeHtml(line) : '&nbsp;'}</span>\n`;
+	}
+	editorLintOverlay.innerHTML = html;
+	editorLintOverlay.scrollTop = editor.scrollTop;
+	editorLintOverlay.scrollLeft = editor.scrollLeft;
+}
+
+const templateOptions = templateDropdown ? Array.from(templateDropdown.options) : [];
+templateOptions.forEach(option => {
+	if (!option.dataset.label) {
+		option.dataset.label = option.textContent.trim();
+	}
+});
+
+function updateTemplateDropdown() {
+	if (!templateDropdown) return;
+	const analysis = analyzeDocument();
+	const options = templateDropdown.querySelectorAll('option');
+
+	options.forEach(option => {
+		const baseLabel = option.dataset.label ?? option.textContent.trim();
+
+		if (!option.value) {
+			option.textContent = baseLabel;
+			option.classList.remove('template-option-added');
+			return;
+		}
+
+		if (analysis[option.value]) {
+			option.textContent = `${baseLabel} \u2022`;
+			option.classList.add('template-option-added');
+		} else {
+			option.textContent = baseLabel;
+			option.classList.remove('template-option-added');
+		}
+	});
+}
+
 function setupEventListeners() {
-	// Modal listeners
 	setupModalListeners();
 
-	// Editor input
 	editor.addEventListener('input', handleEditorInput);
+	editor.addEventListener('input', captureEditorSelection);
+	editor.addEventListener('select', captureEditorSelection);
+	editor.addEventListener('keyup', captureEditorSelection);
+	editor.addEventListener('mouseup', captureEditorSelection);
+	editor.addEventListener('click', captureEditorSelection);
 	editor.addEventListener('scroll', () => previewController?.syncScroll());
+	editor.addEventListener('scroll', () => {
+		if (editorGutter) editorGutter.scrollTop = editor.scrollTop;
+		if (editorHighlights) {
+			editorHighlights.scrollTop = editor.scrollTop;
+			editorHighlights.scrollLeft = editor.scrollLeft;
+		}
+		if (editorLintOverlay) {
+			editorLintOverlay.scrollTop = editor.scrollTop;
+			editorLintOverlay.scrollLeft = editor.scrollLeft;
+		}
+		hideEditorTooltip();
+	});
+	editor.addEventListener('blur', () => {
+		captureEditorSelection();
+	});
+	editor.addEventListener('mousemove', (e) => {
+		if (!lintState.lastIssues?.length) return;
+		const line = getLineFromMouseEvent(e);
+		if (!line) {
+			hideEditorTooltip();
+			return;
+		}
+		const matches = lintState.lastIssues.filter(i => i.line === line);
+		if (!matches.length) {
+			hideEditorTooltip();
+			return;
+		}
+		const editorRect = editor.getBoundingClientRect();
+		const paneRect = editorPane.getBoundingClientRect();
+		const x = Math.min(e.clientX - editorRect.left + 12, editorRect.width - 24);
+		const y = Math.min(e.clientY - editorRect.top + 12, editorRect.height - 24);
+		const message = matches.map(m => `${m.rule}: ${m.message}`).join(' • ');
+		showEditorTooltipAt(editorRect.left - paneRect.left + x, editorRect.top - paneRect.top + y, message);
+	});
+	editor.addEventListener('mouseleave', () => hideEditorTooltip());
 
-	// Sidebar toggle
 	sidebarToggle.addEventListener('click', toggleSidebar);
 	mobileSidebarToggle.addEventListener('click', toggleSidebar);
 
-	// Template dropdown and insert button
-	const templateDropdown = document.getElementById('templateDropdown');
-	const insertTemplateBtn = document.getElementById('insertTemplateBtn');
-	const templateOptions = templateDropdown ? Array.from(templateDropdown.options) : [];
-
-	templateOptions.forEach(option => {
-		if (!option.dataset.label) {
-			option.dataset.label = option.textContent.trim();
+	templateDropdown?.addEventListener('change', () => {
+		if (insertTemplateBtn) {
+			insertTemplateBtn.disabled = !templateDropdown.value;
 		}
-	});
-
-	// Update dropdown option labels to show which templates exist
-	function updateTemplateDropdown() {
-		const analysis = analyzeDocument();
-		const options = templateDropdown.querySelectorAll('option');
-
-		options.forEach(option => {
-			const baseLabel = option.dataset.label ?? option.textContent.trim();
-
-			if (!option.value) {
-				option.textContent = baseLabel;
-				option.classList.remove('template-option-added');
-				return;
-			}
-
-			if (analysis[option.value]) {
-				option.textContent = `${baseLabel} \u2022`;
-				option.classList.add('template-option-added');
-			} else {
-				option.textContent = baseLabel;
-				option.classList.remove('template-option-added');
-			}
-		});
-		
-		}
-
-	templateDropdown.addEventListener('change', () => {
-		insertTemplateBtn.disabled = !templateDropdown.value;
 		updateTemplateDropdown();
 	});
 
-	insertTemplateBtn.addEventListener('click', () => {
-		if (templateDropdown.value) {
-			const selectedValue = templateDropdown.value;
-			insertTemplate(selectedValue);
-			insertTemplateBtn.disabled = true;
-		}
+	insertTemplateBtn?.addEventListener('mousedown', (e) => {
+		e.preventDefault();
+		restoreEditorSelection({ forceEndIfUnknown: false });
 	});
 
-	// Update dropdown indicators on editor input
+	insertTemplateBtn?.addEventListener('click', () => {
+		if (!templateDropdown?.value) return;
+		restoreEditorSelection({ forceEndIfUnknown: false });
+		insertTemplate(templateDropdown.value);
+	});
+
 	const debouncedUpdateTemplateDropdown = debounce(updateTemplateDropdown, 100);
 	editor.addEventListener('input', () => debouncedUpdateTemplateDropdown());
 
-	// Initial update
 	updateTemplateDropdown();
 
-	// Template variable inputs - save to localStorage on change
 	const templateVarInputs = [
-		'projectNameInput', 'usernameInput', 'repoInput',
+		'usernameInput', 'projectNameInput',
 		'ticketNumberInput', 'prTitleInput', 'apiUrlInput', 'contactEmailInput',
 		'projectDescInput', 'licenseTypeInput', 'buildStatusInput', 'buildVersionInput', 'dateInput'
 	];
@@ -286,24 +586,7 @@ function setupEventListeners() {
 		}
 	});
 
-	// Restore template variables from localStorage
-	const savedTemplateVars = localStorage.getItem('templateVariables');
-	if (savedTemplateVars) {
-		try {
-			const templateVars = JSON.parse(savedTemplateVars);
-			templateVarInputs.forEach(inputId => {
-				const input = document.getElementById(inputId);
-				if (input && templateVars[inputId]) {
-					input.value = templateVars[inputId];
-				}
-			});
-		} catch (e) {
-			console.error('Error restoring template variables:', e);
-		}
-	}
-
-	// Initialize date input with today's date if not already set
-	const dateInput = document.getElementById('dateInput');
+		const dateInput = document.getElementById('dateInput');
 	if (dateInput && !dateInput.value) {
 		const today = new Date();
 		const year = today.getFullYear();
@@ -312,72 +595,73 @@ function setupEventListeners() {
 		dateInput.value = `${year}-${month}-${day}`;
 	}
 
-
-	// Preview toggle
-	previewToggle.addEventListener('click', togglePreview);
-
-	// Format buttons
-	formatButtons.forEach(btn => {
+		previewToggle.addEventListener('click', togglePreview);
+	
+		formatButtons.forEach(btn => {
+		btn.addEventListener('mousedown', (e) => {
+			e.preventDefault();
+			restoreEditorSelection({ forceEndIfUnknown: false });
+		});
 		btn.addEventListener('click', () => {
 			const format = btn.dataset.format;
 			if (!format) return;
+			restoreEditorSelection({ forceEndIfUnknown: false });
 			formattingController?.applyFormatting(format);
 		});
 	});
 
-	// File upload / copy
-	filesController?.attachListeners();
-
-	// Validate Markdown
-	validateBtn.addEventListener('click', validateMarkdown);
-
-	// Undo Action
-	undoActionBtn.addEventListener('click', undoAction);
-
-	// Clear All
-	clearAllBtn.addEventListener('click', clearAll);
-
-	// Prettify
-	prettifyBtn.addEventListener('click', () => formattingController?.prettifyMarkdown());
-
-	// Export
-	exportBtn.addEventListener('click', () => filesController?.exportMarkdown());
-
-	// Undo (for prettify toast)
-	undoBtn.addEventListener('click', () => formattingController?.undoPrettify());
-
-	// Keyboard shortcuts
-	document.addEventListener('keydown', handleKeyboardShortcuts);
-
-	// Shortcuts modal
-	closeShortcuts.addEventListener('click', () => {
-		shortcutsModal.classList.remove('show');
-	});
-
-	// Visible shortcuts hint
-	shortcutsHint?.addEventListener('click', () => {
-		shortcutsModal.classList.toggle('show');
-	});
-
-	// Click outside to close shortcuts modal
-	shortcutsModal.addEventListener('click', (e) => {
-		if (e.target === shortcutsModal) {
+		validateBtn.addEventListener('click', validateMarkdown);
+	
+		undoActionBtn.addEventListener('click', undoAction);
+	
+		clearAllBtn.addEventListener('click', clearAll);
+	
+		prettifyBtn.addEventListener('click', () => formattingController?.prettifyMarkdown());
+	
+		exportBtn.addEventListener('click', () => filesController?.exportMarkdown());
+	
+		undoBtn.addEventListener('click', () => formattingController?.undoPrettify());
+	
+		document.addEventListener('keydown', handleKeyboardShortcuts);
+	
+		closeShortcuts.addEventListener('click', () => {
 			shortcutsModal.classList.remove('show');
-		}
-	});
-
-		// Find & Replace (sidebar panel)
+		});
+	
+		shortcutsHint?.addEventListener('click', () => {
+			shortcutsModal.classList.toggle('show');
+		});
+	
+		shortcutsModal.addEventListener('click', (e) => {
+			if (e.target === shortcutsModal) {
+				shortcutsModal.classList.remove('show');
+			}
+		});
+	
 		findPrevBtn.addEventListener('click', () => findReplaceController?.findPrev());
 		findNextBtn.addEventListener('click', () => findReplaceController?.findNext());
 		replaceBtn.addEventListener('click', () => findReplaceController?.replaceCurrent());
 		replaceAllBtn.addEventListener('click', () => findReplaceController?.replaceAll());
 		closeFindReplace.addEventListener('click', () => findReplaceController?.clear());
+	
+		lintBtn?.addEventListener('click', () => runLint());
+	[
+		lintMD001,
+		lintMD013,
+		lintMD022,
+		lintMD041,
+		lintMD047,
+		lintLineLength
+	].forEach((el) => el?.addEventListener('change', () => {
+		saveLintSettings();
+		if (lintState.lastIssues.length) runLint();
+		updateLineNumbers();
+	}));
 
-		}
+}
 
-// ===== Editor Input Handler =====
 const AUTOSAVE_DELAY = 1000;
-const HISTORY_DELAY = 3000; // Save to history every 3 seconds of inactivity
+const HISTORY_DELAY = 3000;
 
 const debounce = window.Utils?.debounce || ((fn) => fn);
 const debouncedAutoSave = debounce(() => {
@@ -387,24 +671,24 @@ const debouncedAutoSave = debounce(() => {
 	updateSaveIndicator('saved');
 }, AUTOSAVE_DELAY);
 const debouncedHistorySave = debounce(() => saveToHistory(), HISTORY_DELAY);
+const debouncedLintRun = debounce(() => runLint(), 500);
 
 function handleEditorInput() {
 	editorState.content = editor.value;
 
-	// Update preview with debounce
 	previewController?.updatePreview();
 
-	// Auto-save with debounce
 	updateSaveIndicator('saving');
 	debouncedAutoSave();
 
-	// Save to undo history with longer debounce
 	debouncedHistorySave();
+
+	updateLineNumbers();
+	if (lintState.lastIssues.length) {
+		debouncedLintRun();
+	}
 }
 
-// Preview/wordcount/scroll logic is handled by previewController.
-
-// ===== Document Analysis =====
 function getSectionPatterns() {
 	return {
 		badges: [/!\[.*?\]\(https:\/\/img\.shields\.io/i, /badge/i, /build.*status/i, /coverage/i],
@@ -532,71 +816,62 @@ function findInsertionPoint(templateName) {
 	return content.length;
 }
 
-function insertTemplate(templateName) {
+async function insertTemplate(templateName) {
 	const template = sections[templateName];
 	if (!template) return;
 
-		const currentContent = editor.value;
-
-	// Save current state to history before making changes
 	saveToHistory();
 
-	// Process template with variables
-	processTemplateVariables(template, templateName).then(processedTemplate => {
-		// Use smart positioning if document has content
-		let insertPos;
-		if (currentContent.trim().length > 0) {
-			insertPos = findInsertionPoint(templateName);
+	const currentContent = editor.value;
+	const processedTemplate = await processTemplateVariables(template, templateName);
 
-			// Add spacing if needed
-			let prefix = '';
-			let suffix = '';
+	const { start: storedStart, end: storedEnd, isKnown } = getEditorSelectionRange();
 
-			if (insertPos > 0 && currentContent[insertPos - 1] !== '\n') {
-				prefix = '\n\n';
-			}
-			if (insertPos < currentContent.length && currentContent[insertPos] !== '\n') {
-				suffix = '\n\n';
-			}
+	let start = storedStart;
+	let end = storedEnd;
 
-			const newContent = currentContent.substring(0, insertPos) + prefix + processedTemplate + suffix + currentContent.substring(insertPos);
-			editor.value = newContent;
+	if (!isKnown && currentContent.trim().length > 0) {
+		start = end = findInsertionPoint(templateName);
+	}
 
-			// Move cursor to start of inserted template
-			const newCursorPos = insertPos + prefix.length;
-			editor.setSelectionRange(newCursorPos, newCursorPos);
-		} else {
-			// Empty document - just insert
-			editor.value = processedTemplate;
-			editor.setSelectionRange(0, 0);
-		}
+	start = Math.max(0, Math.min(start, currentContent.length));
+	end = Math.max(0, Math.min(end, currentContent.length));
 
-		editor.focus();
+	let prefix = '';
+	let suffix = '';
 
-		// Trigger update and refresh template indicators
-		handleEditorInput();
+	if (start > 0 && currentContent[start - 1] !== '\n') {
+		prefix = '\n\n';
+	}
+	if (end < currentContent.length && currentContent[end] !== '\n') {
+		suffix = '\n\n';
+	}
 
-		// Update dropdown labels to reflect newly inserted template
-		updateTemplateDropdown();
+	editor.value = currentContent.substring(0, start) +
+		prefix +
+		processedTemplate +
+		suffix +
+		currentContent.substring(end);
 
-		// Reset dropdown selection after insertion
-		templateDropdown.value = '';
-		insertTemplateBtn.disabled = true;
+	const newCursorPos = start + prefix.length;
+	editor.setSelectionRange(newCursorPos, newCursorPos);
+	editorState.cursor = { start: newCursorPos, end: newCursorPos, isKnown: true };
+	editor.focus();
 
-		setTimeout(() => updateTemplateDropdown(), 50);
+	handleEditorInput();
+	updateTemplateDropdown();
 
-		// Save new state to history immediately after insertion
-		saveToHistory();
-	});
+	if (templateDropdown) templateDropdown.value = '';
+	if (insertTemplateBtn) insertTemplateBtn.disabled = true;
+
+	setTimeout(() => updateTemplateDropdown(), 50);
+	saveToHistory();
 }
 
-// ===== Template Variables =====
 async function processTemplateVariables(template, sectionName) {
-	// Get values from sidebar form inputs
 	const templateVars = {
-		projectName: document.getElementById('projectNameInput')?.value || 'Project Name',
 		username: document.getElementById('usernameInput')?.value || 'username',
-		repo: document.getElementById('repoInput')?.value || 'repo',
+		projectName: document.getElementById('projectNameInput')?.value || 'project-name',
 		ticketNumber: document.getElementById('ticketNumberInput')?.value || '00000',
 		prTitle: document.getElementById('prTitleInput')?.value || '[Title]',
 		apiUrl: document.getElementById('apiUrlInput')?.value || 'https://api.example.com/v1',
@@ -608,7 +883,6 @@ async function processTemplateVariables(template, sectionName) {
 		date: document.getElementById('dateInput')?.value || new Date().toISOString().split('T')[0]
 	};
 
-	// Replace placeholders in template
 	let result = template;
 	Object.keys(templateVars).forEach(key => {
 		const placeholder = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
@@ -618,9 +892,6 @@ async function processTemplateVariables(template, sectionName) {
 	return result;
 }
 
-// File operations and prettify are handled by their controllers.
-
-// ===== Undo Action (General Undo) =====
 let undoHistory = [];
 let redoHistory = [];
 const MAX_HISTORY = 50;
@@ -628,7 +899,6 @@ const MAX_HISTORY = 50;
 function saveToHistory() {
 	const currentContent = editor.value;
 
-	// Don't save if it's the same as the last entry
 	if (undoHistory.length > 0 && undoHistory[undoHistory.length - 1] === currentContent) {
 		return;
 	}
@@ -637,20 +907,17 @@ function saveToHistory() {
 	if (undoHistory.length > MAX_HISTORY) {
 		undoHistory.shift();
 	}
-	redoHistory = []; // Clear redo history on new action
+	redoHistory = [];
 }
 
 function undoAction() {
 	if (undoHistory.length <= 1) {
-		// Need at least 2 states: current and previous
 		showToast('Nothing to undo', 2000);
 		return;
 	}
 
-	// Remove current state
 	const currentState = undoHistory.pop();
 
-	// Get previous state
 	const previousState = undoHistory[undoHistory.length - 1];
 
 	redoHistory.push(currentState);
@@ -658,7 +925,6 @@ function undoAction() {
 	handleEditorInput();
 }
 
-// ===== Clear All =====
 async function clearAll() {
 	if (!editor.value.trim()) {
 		return;
@@ -674,15 +940,12 @@ async function clearAll() {
 	});
 
 	if (confirmed) {
-		saveToHistory(); // Save current state before clearing
+		saveToHistory();
 		editor.value = '';
 		handleEditorInput();
 	}
 }
 
-// Toasts are handled by uiController.
-
-// ===== Markdown Validation =====
 function validateMarkdown() {
 	const content = editor.value;
 	if (!content.trim()) {
@@ -720,24 +983,19 @@ function validateMarkdown() {
 	});
 }
 
-// ===== Sidebar Toggle =====
 function toggleSidebar() {
-	// Only toggle on mobile
 	if (window.innerWidth <= 768) {
 		sidebar.classList.toggle('show');
 		editorState.sidebarCollapsed = !sidebar.classList.contains('show');
 		localStorage.setItem('sidebarCollapsed', editorState.sidebarCollapsed);
 	}
-	// Desktop: sidebar always visible, do nothing
 }
 
-// ===== Preview Toggle =====
 function togglePreview() {
 	editorState.previewVisible = !editorState.previewVisible;
 	previewPane.classList.toggle('show');
 }
 
-// ===== Save Indicator =====
 function updateSaveIndicator(state) {
 	if (state === 'saving') {
 		saveIndicator.classList.add('saving');
@@ -748,9 +1006,7 @@ function updateSaveIndicator(state) {
 	}
 }
 
-// ===== Keyboard Shortcuts =====
 function handleKeyboardShortcuts(e) {
-	// Ctrl+S: Save manually
 	if (e.ctrlKey && e.key === 's') {
 		e.preventDefault();
 		persistenceController?.saveContent();
@@ -758,35 +1014,30 @@ function handleKeyboardShortcuts(e) {
 		return;
 	}
 
-	// Ctrl+E: Export
 	if (e.ctrlKey && e.key === 'e') {
 		e.preventDefault();
 		filesController?.exportMarkdown();
 		return;
 	}
 
-	// Ctrl+Shift+F: Prettify
 	if (e.ctrlKey && e.shiftKey && e.key === 'F') {
 		e.preventDefault();
 		formattingController?.prettifyMarkdown();
 		return;
 	}
 
-	// Ctrl+Z: Undo prettify (only if snapshot exists)
 	if (e.ctrlKey && e.key === 'z' && editorState.prettifySnapshot) {
 		e.preventDefault();
 		formattingController?.undoPrettify();
 		return;
 	}
 
-	// Ctrl+/: Show shortcuts
 	if (e.ctrlKey && e.key === '/') {
 		e.preventDefault();
 		shortcutsModal.classList.toggle('show');
 		return;
 	}
 
-	// Ctrl+H: Find & Replace
 	if (e.ctrlKey && e.key === 'h') {
 		e.preventDefault();
 		findReplaceController?.open();
@@ -794,5 +1045,4 @@ function handleKeyboardShortcuts(e) {
 	}
 }
 
-// ===== Start Application =====
 window.addEventListener('DOMContentLoaded', init);

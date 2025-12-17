@@ -1,4 +1,3 @@
-// Preview rendering, word count, and scroll sync.
 (function () {
 	function createPreview({
 		editor,
@@ -61,4 +60,3 @@
 
 	window.Preview = { createPreview };
 })();
-

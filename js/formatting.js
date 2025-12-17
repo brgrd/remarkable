@@ -1,5 +1,3 @@
-// Formatting and prettify logic for the editor.
-// Exposes a small controller that relies on injected dependencies.
 (function () {
 	function createFormatting({
 		editor,

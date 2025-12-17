@@ -1,4 +1,3 @@
-// File operations: upload/drag-drop, export, copy.
 (function () {
 	function createFiles({
 		editor,

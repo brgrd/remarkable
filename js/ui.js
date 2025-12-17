@@ -1,4 +1,3 @@
-// UI helpers: custom modal and toast notifications.
 (function () {
 	function createUI({
 		editorState,
@@ -103,4 +102,3 @@
 
 	window.UI = { createUI };
 })();
-
